@@ -1,8 +1,5 @@
 package org.jdamico.bc.openpgp.tests;
-import static org.junit.Assert.*;
-
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -13,11 +10,11 @@ import java.security.NoSuchProviderException;
 import java.security.Security;
 import java.security.SignatureException;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openpgp.PGPException;
 import org.jdamico.bc.openpgp.utils.PgpHelper;
 import org.jdamico.bc.openpgp.utils.RSAKeyPairGenerator;
 import org.junit.Test;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.spongycastle.openpgp.PGPException;
 
 
 public class TestBCOpenPGP {

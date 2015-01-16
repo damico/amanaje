@@ -1,10 +1,12 @@
 package com.amanaje.commons;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -337,6 +339,37 @@ public class Utils {
 		return bytes;
 	}
 
+	public String getStringFromFile(File inputFile) throws AppException{
+		
+		StringBuffer strFromFile = new StringBuffer();
+		BufferedReader br = null;
+		FileReader fr = null;
+		
+		try {
+ 
+			String sCurrentLine;
+			fr = new FileReader(inputFile);
+			br = new BufferedReader(fr);
+ 
+			while ((sCurrentLine = br.readLine()) != null) {
+				strFromFile.append(sCurrentLine);
+			}
+ 
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (br != null) br.close();
+				
+			} catch (IOException ex) {
+				throw new AppException(ex);
+			}
+
+		}
+		
+		return strFromFile.toString();
+	}
+	
 	public void byteArrayToFile(byte[] bytes, String strFilePath) throws AppException{
 		FileOutputStream fos = null;
 		try {

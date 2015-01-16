@@ -1,6 +1,8 @@
 package com.amanaje.crypto;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -11,6 +13,7 @@ import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PublicKey;
 import java.security.Security;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
@@ -27,9 +30,9 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openpgp.PGPException;
 import org.jdamico.bc.openpgp.utils.RSAKeyPairGenerator;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.spongycastle.openpgp.PGPException;
 
 import android.content.Context;
 
@@ -53,13 +56,20 @@ public class CryptoUtils {
 	}
 
 	
-	public OpenPgpEntity genKeyPair(Context context, String id, String privKeyPasswd, boolean isArmored) throws InvalidKeyException, NoSuchProviderException, SignatureException, IOException, PGPException, NoSuchAlgorithmException {
+	public void genKeyPair(Context context, String id, String privKeyPasswd, boolean isArmored) throws AppException {
 
 		RSAKeyPairGenerator rkpg = new RSAKeyPairGenerator();
 
 		Security.addProvider(new BouncyCastleProvider());
 
-		KeyPairGenerator    kpg = KeyPairGenerator.getInstance("RSA", "BC");
+		KeyPairGenerator kpg = null;
+		try {
+			kpg = KeyPairGenerator.getInstance("RSA", "BC");
+		} catch (NoSuchAlgorithmException e) {
+			throw new AppException(e);
+		} catch (NoSuchProviderException e) {
+			throw new AppException(e);
+		}
 
 		kpg.initialize(1024);
 
@@ -68,15 +78,57 @@ public class CryptoUtils {
 		File privKeyFile = new File(context.getFilesDir(), Constants.PRIV_KEY_FILE_LOCATION);
 		File pubKeyFile = new File(context.getFilesDir(), Constants.PUB_KEY_FILE_LOCATION);
 
-		FileOutputStream    out1 = new FileOutputStream(privKeyFile);
-		FileOutputStream    out2 = new FileOutputStream(pubKeyFile);
+		ByteArrayOutputStream out1 = null;
+		try {
+//			out1 = new FileOutputStream(privKeyFile);
+			out1 = new ByteArrayOutputStream();
+		} catch (Exception e) {
+			throw new AppException(e);
+		} finally {
+			if(out1!=null) try { out1.flush(); } catch (IOException e) { throw new AppException(e); }
+			if(out1!=null) try { out1.close(); } catch (IOException e) { throw new AppException(e); }
+		}
+		ByteArrayOutputStream out2 = null;
+		try {
+			//out2 = new FileOutputStream(pubKeyFile);
+			out2 = new ByteArrayOutputStream();
+		} catch (Exception e) {
+			throw new AppException(e);
+		} finally {
+			if(out2!=null) try { out2.flush(); } catch (IOException e) { throw new AppException(e); }
+			if(out2!=null) try { out2.close(); } catch (IOException e) { throw new AppException(e); }
+		}
 
-		rkpg.exportKeyPair(out1, out2, kp.getPublic(), kp.getPrivate(), id, privKeyPasswd.toCharArray(), isArmored);
+		try {
+			rkpg.exportKeyPair(out1, out2, kp.getPublic(), kp.getPrivate(), id, privKeyPasswd.toCharArray(), isArmored);
+		} catch (InvalidKeyException e) {
+			throw new AppException(e);
+		} catch (NoSuchProviderException e) {
+			throw new AppException(e);
+		} catch (SignatureException e) {
+			throw new AppException(e);
+		} catch (IOException e) {
+			throw new AppException(e);
+		} catch (PGPException e) {
+			throw new AppException(e);
+		}
 		
+		String privHex = null;
+		String pubHex = null; 
 		
-		
-		return null;
+		try {
+			pubHex = Utils.getInstance().byteArrayToHexString(out1.toByteArray());
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		try {
+			privHex = Utils.getInstance().byteArrayToHexString(out2.toByteArray());
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 
+		Utils.getInstance().writeTextToFile(pubKeyFile, pubHex);
+		Utils.getInstance().writeTextToFile(pubKeyFile, privHex);
 
 	}
 

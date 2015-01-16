@@ -1,4 +1,5 @@
 package org.jdamico.bc.openpgp.utils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -9,31 +10,32 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Iterator;
 
-import org.bouncycastle.bcpg.ArmoredOutputStream;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openpgp.PGPCompressedData;
-import org.bouncycastle.openpgp.PGPCompressedDataGenerator;
-import org.bouncycastle.openpgp.PGPEncryptedData;
-import org.bouncycastle.openpgp.PGPEncryptedDataGenerator;
-import org.bouncycastle.openpgp.PGPEncryptedDataList;
-import org.bouncycastle.openpgp.PGPException;
-import org.bouncycastle.openpgp.PGPLiteralData;
-import org.bouncycastle.openpgp.PGPObjectFactory;
-import org.bouncycastle.openpgp.PGPOnePassSignatureList;
-import org.bouncycastle.openpgp.PGPPrivateKey;
-import org.bouncycastle.openpgp.PGPPublicKey;
-import org.bouncycastle.openpgp.PGPPublicKeyEncryptedData;
-import org.bouncycastle.openpgp.PGPPublicKeyRing;
-import org.bouncycastle.openpgp.PGPPublicKeyRingCollection;
-import org.bouncycastle.openpgp.PGPSecretKey;
-import org.bouncycastle.openpgp.PGPSecretKeyRingCollection;
-import org.bouncycastle.openpgp.operator.PBESecretKeyDecryptor;
-import org.bouncycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
-import org.bouncycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
-import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
-import org.bouncycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
-import org.bouncycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
-import org.bouncycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
+import org.spongycastle.bcpg.ArmoredOutputStream;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.spongycastle.openpgp.PGPCompressedData;
+import org.spongycastle.openpgp.PGPCompressedDataGenerator;
+import org.spongycastle.openpgp.PGPEncryptedData;
+import org.spongycastle.openpgp.PGPEncryptedDataGenerator;
+import org.spongycastle.openpgp.PGPEncryptedDataList;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPLiteralData;
+import org.spongycastle.openpgp.PGPObjectFactory;
+import org.spongycastle.openpgp.PGPOnePassSignatureList;
+import org.spongycastle.openpgp.PGPPrivateKey;
+import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPPublicKeyEncryptedData;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPPublicKeyRingCollection;
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPSecretKeyRingCollection;
+import org.spongycastle.openpgp.PGPUtil;
+import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
+import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
 
 /**
  * Taken from org.bouncycastle.openpgp.examples
@@ -56,7 +58,7 @@ public class PgpHelper {
 
 
 	public PGPPublicKey readPublicKey(InputStream in) throws IOException, PGPException {
-        in = org.bouncycastle.openpgp.PGPUtil.getDecoderStream(in);
+        in = PGPUtil.getDecoderStream(in);
         PGPPublicKeyRingCollection pgpPub = new PGPPublicKeyRingCollection(in);
 
         //
@@ -104,8 +106,7 @@ public class PgpHelper {
     public PGPPrivateKey findSecretKey(InputStream keyIn, long keyID, char[] pass)
     	throws IOException, PGPException, NoSuchProviderException
     {
-        PGPSecretKeyRingCollection pgpSec = new PGPSecretKeyRingCollection(
-        	org.bouncycastle.openpgp.PGPUtil.getDecoderStream(keyIn));
+        PGPSecretKeyRingCollection pgpSec = new PGPSecretKeyRingCollection(PGPUtil.getDecoderStream(keyIn));
 
         PGPSecretKey pgpSecKey = pgpSec.getSecretKey(keyID);
 
@@ -126,7 +127,7 @@ public class PgpHelper {
     	throws Exception
     {
     	Security.addProvider(new BouncyCastleProvider());
-        in = org.bouncycastle.openpgp.PGPUtil.getDecoderStream(in);
+        in = PGPUtil.getDecoderStream(in);
         PGPObjectFactory pgpF = new PGPObjectFactory(in);
         PGPEncryptedDataList enc;
         Object o = pgpF.nextObject();
@@ -205,7 +206,7 @@ public class PgpHelper {
         PGPCompressedDataGenerator comData = new PGPCompressedDataGenerator(
             PGPCompressedData.ZIP);
 
-        org.bouncycastle.openpgp.PGPUtil.writeFileToLiteralData(comData.open(bOut),
+        	PGPUtil.writeFileToLiteralData(comData.open(bOut),
             PGPLiteralData.BINARY, new File(fileName));
 
         comData.close();

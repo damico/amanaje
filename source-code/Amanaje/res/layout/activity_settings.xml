@@ -9,6 +9,35 @@
     tools:context="com.amanaje.activities.SettingsActivity" >
 
     <TableRow
+        android:id="@+id/tableRow5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phone Number:" />
+
+            <EditText
+                android:id="@+id/myPhoneNumberEt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10" >
+
+                <requestFocus />
+            </EditText>
+
+        </LinearLayout>
+
+    </TableRow>
+
+    <TableRow
         android:id="@+id/tableRow4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" >
@@ -25,113 +54,102 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <EditText
-                android:id="@+id/editText3"
+                android:id="@+id/privKeyPasswordEt"
                 android:layout_width="110dp"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textPassword" />
         </LinearLayout>
-
     </TableRow>
 
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="fill_parent"
+    <TableRow
+        android:id="@+id/tableRow1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
-
-                <Button
-                    android:id="@+id/button1"
-                    style="?android:attr/buttonStyleSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Gen Key Pair" />
-
-                <Button
-                    android:id="@+id/button3"
-                    style="?android:attr/buttonStyleSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Copy Pub Key" />
-
-            </LinearLayout>
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow2"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" >
-
-                <TextView
-                    android:id="@+id/textView1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Activation Key 1:" />
-
-                <EditText
-                    android:id="@+id/editText1"
-                    android:layout_width="178dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal|fill_horizontal|top"
-                    android:layout_marginTop="16dp"
-                    android:ems="10" >
-
-                    <requestFocus />
-                </EditText>
-
-            </LinearLayout>
-
-            
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow3"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
-
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Activation Key 2:" />
-
-                <EditText
-                    android:id="@+id/editText2"
-                    android:layout_width="178dp"
-                    android:layout_height="wrap_content"
-                    android:ems="10" />
-
-            </LinearLayout>
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRow6"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" >
 
             <Button
-                android:id="@+id/button2"
-                android:layout_width="match_parent"
+                android:id="@+id/genKeyPairBt"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="21dp"
-                android:text="Gen Seed" />
+                android:text="Gen Key Pair" />
 
-        </TableRow>
+            <Button
+                android:id="@+id/copyPubKeyBt"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Copy Pub Key" />
+        </LinearLayout>
+    </TableRow>
 
-    </TableLayout>
+    <TableRow
+        android:id="@+id/tableRow2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
 
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Activation Key 1:" />
+
+            <EditText
+                android:id="@+id/editText1"
+                android:layout_width="178dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|fill_horizontal|top"
+                android:layout_marginTop="16dp"
+                android:ems="10" >
+
+                
+            </EditText>
+        </LinearLayout>
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Activation Key 2:" />
+
+            <EditText
+                android:id="@+id/editText2"
+                android:layout_width="178dp"
+                android:layout_height="wrap_content"
+                android:ems="10" />
+        </LinearLayout>
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/tableRow6"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="21dp"
+            android:text="Gen Seed" />
+    </TableRow>
+
+</TableLayout>

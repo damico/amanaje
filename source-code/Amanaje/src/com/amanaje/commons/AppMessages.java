@@ -71,6 +71,7 @@ public class AppMessages {
 		ptMap.put("GLOBAL.clear_cache_button", "Limpar cache");
 		ptMap.put("GLOBAL.cache_cleaned", "Cache limpo.");
 		ptMap.put("GLOBAL.panicTv", "Senha de pânico:");
+		ptMap.put("GLOBAL.loading", "processando...");
 
 		return ptMap;
 	}
@@ -111,6 +112,7 @@ public class AppMessages {
 		enMap.put("GLOBAL.clear_cache_button", "Clear cache");
 		enMap.put("GLOBAL.cache_cleaned", "Cache cleaned.");
 		enMap.put("GLOBAL.panicTv", "Panic password:");
+		enMap.put("GLOBAL.loading", "loading...");
 
 		/*
 		 enMap.put("Utils.createConfig.failedToTransformKeyHash", "");

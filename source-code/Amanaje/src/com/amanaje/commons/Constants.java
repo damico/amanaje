@@ -15,6 +15,8 @@ public interface Constants {
 	public static final String XML_CONFIG_KEY_PANICNUMBER_ATTRIB = "panicNumber";
 	public static final String PRIV_KEY_FILE_LOCATION = ".amanaje.priv.key";
 	public static final String PUB_KEY_FILE_LOCATION = ".amanaje.priv.key";
+	public static final int GEN_KEY_PAIR_TYPE = 1000;
+	public static final int TRANS_COPY_TYPE = 1001;
 	
 
 }
