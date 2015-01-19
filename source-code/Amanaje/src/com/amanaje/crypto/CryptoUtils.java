@@ -128,7 +128,7 @@ public class CryptoUtils {
 		}
 
 		Utils.getInstance().writeTextToFile(pubKeyFile, pubHex);
-		Utils.getInstance().writeTextToFile(pubKeyFile, privHex);
+		Utils.getInstance().writeTextToFile(privKeyFile, privHex);
 
 	}
 

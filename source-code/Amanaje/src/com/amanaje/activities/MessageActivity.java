@@ -1,21 +1,40 @@
 package com.amanaje.activities;
 
-import com.amanaje.R;
-import com.amanaje.R.id;
-import com.amanaje.R.layout;
-import com.amanaje.R.menu;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.amanaje.R;
 
 public class MessageActivity extends Activity {
 
+	private String body = null;
+	private String address = null;
+	
+	TextView msgTv = null;
+	EditText replyEt = null;
+	Button replyBt = null;
+	Button delBt = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_message);
+		
+		Bundle extras = getIntent().getExtras();
+		if (extras != null) {
+		    body = extras.getString("body");
+		    address = extras.getString("address");
+		}
+		
+		msgTv = (TextView) findViewById(R.id.messageTv);
+		msgTv.setText(address+": "+body);
+		
+		
 	}
 
 	@Override

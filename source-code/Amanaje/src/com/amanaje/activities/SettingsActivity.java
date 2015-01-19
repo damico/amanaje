@@ -40,7 +40,7 @@ public class SettingsActivity extends Activity {
 		builder = new AlertDialog.Builder(this);
 		privKeyPassword = (EditText) findViewById(R.id.privKeyPasswordEt);
 		myPhoneNumber = (EditText) findViewById(R.id.myPhoneNumberEt);
-		genKeyPair = (Button) findViewById(R.id.genKeyPairBt);
+		genKeyPair = (Button) findViewById(R.id.delMsgBt);
 		copyPubKey = (Button) findViewById(R.id.copyPubKeyBt);
 		copyPubKey.setEnabled(false);
 		
@@ -110,7 +110,7 @@ public class SettingsActivity extends Activity {
 
 				}
 
-				if(myPhoneNumber.getText().toString().length() == 0){
+				if(privKeyPassword.getText().toString().length() == 0){
 					err++;
 
 					builder.setMessage("Type the password.")

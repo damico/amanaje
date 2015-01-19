@@ -97,13 +97,13 @@
             android:layout_height="wrap_content" >
 
             <TextView
-                android:id="@+id/textView1"
+                android:id="@+id/messageTv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Activation Key 1:" />
 
             <EditText
-                android:id="@+id/editText1"
+                android:id="@+id/replyEt"
                 android:layout_width="178dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|fill_horizontal|top"
@@ -132,7 +132,7 @@
                 android:text="Activation Key 2:" />
 
             <EditText
-                android:id="@+id/editText2"
+                android:id="@+id/numberEt"
                 android:layout_width="178dp"
                 android:layout_height="wrap_content"
                 android:ems="10" />
@@ -145,7 +145,7 @@
         android:layout_height="fill_parent" >
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/replyMsgBt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="21dp"

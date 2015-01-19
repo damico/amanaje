@@ -16,10 +16,26 @@
             android:layout_height="wrap_content" >
 
             <TextView
-                android:id="@+id/textView1"
+                android:id="@+id/messageTv"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:text="Message" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <EditText
+                android:id="@+id/replyEt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10" >
+
+                <requestFocus />
+            </EditText>
 
         </TableRow>
 
@@ -33,34 +49,29 @@
                 android:layout_height="wrap_content" >
 
                 <Button
-                    android:id="@+id/genKeyPairBt"
+                    android:id="@+id/delMsgBt"
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Delete" />
 
+                <Button
+                    android:id="@+id/replyMsgBt"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Reply" />
+
             </LinearLayout>
 
-            <Button
-                android:id="@+id/button2"
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Reply" />
-
         </TableRow>
 
         <TableRow
-            android:id="@+id/tableRow3"
+            android:id="@+id/tableRow5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
         </TableRow>
 
-        <TableRow
-            android:id="@+id/tableRow4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-        </TableRow>
     </TableLayout>
 
 

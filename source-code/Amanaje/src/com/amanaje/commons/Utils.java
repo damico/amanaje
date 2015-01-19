@@ -68,7 +68,7 @@ public class Utils {
 
 	public ConfigEntity configFileToConfigEntity(File fXmlFile) throws AppException {
 
-		ConfigEntity ConfigEntity = null;
+		ConfigEntity configEntity = null;
 		DocumentBuilderFactory dbFactory = null;
 		DocumentBuilder dBuilder = null;
 		try {
@@ -77,14 +77,12 @@ public class Utils {
 			Document doc = dBuilder.parse(fXmlFile);
 			doc.getDocumentElement().normalize();
 
-			String hash = (String) getDomTagAttribute(doc, Constants.XML_CONFIG_KEY_TAG, Constants.XML_CONFIG_KEY_HASH_ATTRIB);
-			String algo = (String) getDomTagAttribute(doc, Constants.XML_CONFIG_ALGO_TAG, Constants.XML_CONFIG_ALGO_TYPE_ATTRIB);
+			String nick = (String) getDomTagAttribute(doc, Constants.XML_CONFIG_CONTACT_TAG, Constants.XML_CONFIG_CONTACT_NICK_ATTRIB);
+			String number = (String) getDomTagAttribute(doc, Constants.XML_CONFIG_CONTACT_TAG, Constants.XML_CONFIG_CONTACT_NUMBER_ATTRIB);
+			String seed = (String) getDomTagAttribute(doc, Constants.XML_CONFIG_CONTACT_TAG, Constants.XML_CONFIG_CONTACT_SEED_ATTRIB);
+			String pubKey = (String) getDomTagValue(doc, Constants.XML_CONFIG_KEY_TAG);
 
-			String panicPassword = (String) getDomTagAttribute(doc, Constants.XML_CONFIG_KEY_TAG, Constants.XML_CONFIG_KEY_PANICPASSWD_ATTRIB);
-			int panicNumber = Integer.parseInt( (String) getDomTagAttribute(doc, Constants.XML_CONFIG_KEY_TAG, Constants.XML_CONFIG_KEY_PANICNUMBER_ATTRIB) );
-
-
-			ConfigEntity = new ConfigEntity(algo, hash, false, panicPassword, panicNumber);
+			configEntity = new ConfigEntity(nick, number, seed, pubKey, null, null);
 
 		} catch (NumberFormatException e) {
 			throw new AppException(e);
@@ -96,16 +94,17 @@ public class Utils {
 			throw new AppException(e);
 		}
 
-		return ConfigEntity;
+		return configEntity;
 	}
 
-	public void ConfigEntityToConfigFile(ConfigEntity ConfigEntity, File file) throws AppException {
+	public void configEntityToConfigFile(ConfigEntity configEntity, File file) throws AppException {
 
 		StringBuffer sb = new StringBuffer();
 		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 		sb.append("<"+Constants.XML_CONFIG_ROOT_TAG+">\n");
-		sb.append("<"+Constants.XML_CONFIG_KEY_TAG+" "+Constants.XML_CONFIG_KEY_HASH_ATTRIB+"=\""+ConfigEntity.getHashedKey()+"\" "+Constants.XML_CONFIG_KEY_PANICPASSWD_ATTRIB+"=\""+ConfigEntity.getPanicPassword()+"\" "+Constants.XML_CONFIG_KEY_PANICNUMBER_ATTRIB+"=\""+ConfigEntity.getPanicNumber()+"\"/>\n");
-		sb.append("<"+Constants.XML_CONFIG_ALGO_TAG+" "+Constants.XML_CONFIG_ALGO_TYPE_ATTRIB+"=\""+ConfigEntity.getEncAlgo()+"\"/>\n");
+		sb.append("<"+Constants.XML_CONFIG_CONTACT_TAG+" "+Constants.XML_CONFIG_CONTACT_NICK_ATTRIB+"=\""+configEntity.getNick()+"\" "+Constants.XML_CONFIG_CONTACT_NUMBER_ATTRIB+"=\""+configEntity.getNumber()+"\" "+Constants.XML_CONFIG_CONTACT_SEED_ATTRIB+"=\""+configEntity.getSeed()+"\"/>\n");
+		sb.append("<"+Constants.XML_CONFIG_KEY_TAG+">\n"+configEntity.getPublicKey()+"\n");
+		sb.append("</"+Constants.XML_CONFIG_KEY_TAG+">\n");
 		sb.append("</"+Constants.XML_CONFIG_ROOT_TAG+">\n");
 		writeTextToFile(file, sb.toString());
 
@@ -129,7 +128,28 @@ public class Utils {
 		return ret;
 	}
 
+	public Object getDomTagValue(Document doc, String tag) {
+		Object ret = null;
 
+		NodeList nList = doc.getElementsByTagName(Constants.XML_CONFIG_ROOT_TAG);
+		 
+	 
+		for (int temp = 0; temp < nList.getLength(); temp++) {
+	 
+			Node nNode = nList.item(temp);
+	 
+			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+	 
+				Element eElement = (Element) nNode;
+				ret = (eElement.getElementsByTagName(tag).item(0).getTextContent());
+	 
+			}
+		}
+
+		return ret;
+	}
+	
+	
 	public boolean isAuthenticated(Context context, String passwd) {
 
 		boolean isAuthenticated = false;
@@ -182,7 +202,7 @@ public class Utils {
 						}
 					}
 
-					ConfigEntityToConfigFile(new ConfigEntity(algo, hashedKey, false, panicPassword, panicNumber), file);
+					configEntityToConfigFile(new ConfigEntity(algo, hashedKey, false, panicPassword, panicNumber), file);
 
 				}else throw new AppException(AppMessages.getInstance().getMessage("Utils.changeConfig.diffPasswd"));
 
@@ -229,7 +249,7 @@ public class Utils {
 
 
 			ConfigEntity.setEncAlgo(algo);	
-			ConfigEntityToConfigFile(ConfigEntity, file);
+			configEntityToConfigFile(ConfigEntity, file);
 		}
 
 

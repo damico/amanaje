@@ -1,13 +1,11 @@
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.amanaje.activities.ContactDetailActivity" >
+    android:layout_height="fill_parent" >
 
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:stretchColumns="1" >
 
         <TableRow
             android:id="@+id/tableRow1"
@@ -19,20 +17,18 @@
                 android:layout_height="wrap_content" >
 
                 <TextView
-                    android:id="@+id/textView1"
+                    android:id="@+id/messageTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Nickname:" />
 
                 <EditText
-                    android:id="@+id/editText1"
+                    android:id="@+id/nickContactEt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10" />
-
             </LinearLayout>
-
         </TableRow>
 
         <TableRow
@@ -51,14 +47,12 @@
                     android:text="Phone #:" />
 
                 <EditText
-                    android:id="@+id/editText2"
+                    android:id="@+id/numberContactEt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10" />
-
             </LinearLayout>
-
         </TableRow>
 
         <TableRow
@@ -78,17 +72,16 @@
                     android:text="Public Key:" />
 
                 <EditText
-                    android:id="@+id/privKeyPasswordEt"
+                    android:id="@+id/pubKeyContactEt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:inputType="textMultiLine" >
+                    android:inputType="textMultiLine"
+                    android:lines="5" >
 
                     <requestFocus />
                 </EditText>
-
             </LinearLayout>
-
         </TableRow>
 
         <TableRow
@@ -100,7 +93,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" >
             </LinearLayout>
-
         </TableRow>
 
         <TableRow
@@ -112,7 +104,56 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" >
             </LinearLayout>
+        </TableRow>
 
+        <TableRow
+            android:id="@+id/tableRow7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Activation Key 1: "
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                <EditText
+                    android:id="@+id/actKey1ContactEt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10" />
+            </LinearLayout>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Activation Key 2: "
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                <EditText
+                    android:id="@+id/actKey2ContactEt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10" />
+            </LinearLayout>
         </TableRow>
 
         <TableRow
@@ -125,20 +166,20 @@
                 android:layout_height="wrap_content" >
 
                 <Button
-                    android:id="@+id/genKeyPairBt"
+                    android:id="@+id/delContactBt"
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Delete" />
 
                 <Button
-                    android:id="@+id/button2"
+                    android:id="@+id/saveContactBt"
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Save" />
             </LinearLayout>
-
         </TableRow>
-
     </TableLayout>
+
+</ScrollView>
