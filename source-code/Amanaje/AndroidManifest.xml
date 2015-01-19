@@ -35,7 +35,7 @@
             android:label="@string/title_activity_contact_detail" >
         </activity>
         <activity
-            android:name=".MessageActivity"
+            android:name="com.amanaje.activities.MessageActivity"
             android:label="@string/title_activity_message" >
         </activity>
     </application>

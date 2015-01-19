@@ -2,6 +2,8 @@ package com.amanaje.commons;
 
 import com.amanaje.R;
 import com.amanaje.activities.ContactDetailActivity;
+import com.amanaje.activities.MainActivity;
+import com.amanaje.activities.MessageActivity;
 import com.amanaje.activities.PrivContactsActivity;
 import com.amanaje.activities.SettingsActivity;
 
@@ -52,6 +54,16 @@ public class ActivityHelper {
 			
 		} else if (id == R.id.action_contacts) {
 			Intent intent = new Intent(srcActivity, PrivContactsActivity.class);
+			srcActivity.startActivityForResult(intent, 0);
+			ret = true;
+			
+		} else if (id == R.id.action_messages) {
+			Intent intent = new Intent(srcActivity, MainActivity.class);
+			srcActivity.startActivityForResult(intent, 0);
+			ret = true;
+			
+		} else if (id == R.id.action_messages) {
+			Intent intent = new Intent(srcActivity, MainActivity.class);
 			srcActivity.startActivityForResult(intent, 0);
 			ret = true;
 		}

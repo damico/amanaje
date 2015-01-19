@@ -103,7 +103,7 @@ public class Utils {
 		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 		sb.append("<"+Constants.XML_CONFIG_ROOT_TAG+">\n");
 		sb.append("<"+Constants.XML_CONFIG_CONTACT_TAG+" "+Constants.XML_CONFIG_CONTACT_NICK_ATTRIB+"=\""+configEntity.getNick()+"\" "+Constants.XML_CONFIG_CONTACT_NUMBER_ATTRIB+"=\""+configEntity.getNumber()+"\" "+Constants.XML_CONFIG_CONTACT_SEED_ATTRIB+"=\""+configEntity.getSeed()+"\"/>\n");
-		sb.append("<"+Constants.XML_CONFIG_KEY_TAG+">\n"+configEntity.getPublicKey()+"\n");
+		sb.append("<"+Constants.XML_CONFIG_KEY_TAG+">"+configEntity.getPublicKey());
 		sb.append("</"+Constants.XML_CONFIG_KEY_TAG+">\n");
 		sb.append("</"+Constants.XML_CONFIG_ROOT_TAG+">\n");
 		writeTextToFile(file, sb.toString());

@@ -22,13 +22,15 @@ import com.amanaje.entities.OpenPgpEntity;
 public class PrivContactsActivity extends Activity {
 	
 	Activity thisActivity = null;
-	public static List<String> list = new ArrayList<String>();
+	ListView listViewContacts = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_priv_contacts);
 		thisActivity = this;
+		
+		listViewContacts = (ListView) findViewById(R.id.listviewcontacts);
 		
 		AsyncTaskManager aTaskMan = new AsyncTaskManager(thisActivity, Constants.LIST_CONTACTS_TYPE, null);
 		aTaskMan.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
@@ -38,7 +40,6 @@ public class PrivContactsActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
