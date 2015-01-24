@@ -16,11 +16,14 @@ public interface Constants {
 	public static final String XML_CONFIG_KEY_PANICNUMBER_ATTRIB = "panicNumber";
 	public static final String PRIV_KEY_FILE_LOCATION = ".amanaje.priv.key";
 	public static final String PUB_KEY_FILE_LOCATION = ".amanaje.pub.key";
+	public static final String TEMP_FILE = ".amanaje.temp";
 	
 	public static final int GEN_KEY_PAIR_TYPE = 1000;
 	public static final int TRANS_COPY_TYPE = 1001;
 	public static final int SAVE_CONTACT_TYPE = 1002;
 	public static final int LIST_CONTACTS_TYPE = 1003;
+	public static final int SEND_SMS_TYPE = 1004;
+	
 	
 
 }

@@ -26,10 +26,6 @@
         android:showAsAction="never"
         android:title="@string/action_messages"/>
     
-    <item
-        android:id="@+id/action_newmsg"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_newmsg"/>
+
     
 </menu>

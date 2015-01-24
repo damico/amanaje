@@ -62,11 +62,7 @@ public class ActivityHelper {
 			srcActivity.startActivityForResult(intent, 0);
 			ret = true;
 			
-		} else if (id == R.id.action_messages) {
-			Intent intent = new Intent(srcActivity, MainActivity.class);
-			srcActivity.startActivityForResult(intent, 0);
-			ret = true;
-		}
+		} 
 		return ret;
 
 	}

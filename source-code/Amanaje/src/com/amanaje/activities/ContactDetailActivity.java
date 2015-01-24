@@ -24,6 +24,7 @@ public class ContactDetailActivity extends Activity {
 
 	private AsyncTaskManager aTaskMan = null;
 	private Button save = null;
+	private Button send = null;
 	private Button del = null;
 	private EditText nick = null;
 	private EditText number = null;
@@ -34,6 +35,8 @@ public class ContactDetailActivity extends Activity {
 	private String extraNick = null;
 	private String extraNumber = null;
 	private String extraPubKey = null;
+	private String extraFileName = null;
+	private String extraSeed = null;
 	private String extraAkey1 = null;
 	private String extraAkey2 = null;
 	private String thisContactFileName = null;
@@ -45,6 +48,7 @@ public class ContactDetailActivity extends Activity {
 		setContentView(R.layout.activity_contact_detail);
 
 		save = 		(Button) 	findViewById(R.id.saveContactBt);
+		send = 		(Button) 	findViewById(R.id.sendSmsBt);
 		del = 		(Button) 	findViewById(R.id.delContactBt);
 		nick = 		(EditText) 	findViewById(R.id.nickContactEt);
 		number = 	(EditText) 	findViewById(R.id.numberContactEt);
@@ -52,6 +56,7 @@ public class ContactDetailActivity extends Activity {
 		aKey2 = 	(EditText) 	findViewById(R.id.actKey2ContactEt);
 		pubKey = 	(EditText) 	findViewById(R.id.pubKeyContactEt);
 		del.setEnabled(false);
+		send.setEnabled(false);
 
 		thisActivity = this;
 
@@ -63,6 +68,10 @@ public class ContactDetailActivity extends Activity {
 			
 			extraAkey1 = extras.getString("aKey1"); 
 			extraAkey2 = extras.getString("aKey2");
+			
+			extraSeed = extras.getString("seed");
+			extraFileName = extras.getString("fileName");
+			
 			thisContactFileName = extras.getString("thisContactFileName");
 			
 			if(extraAkey1 != null && extraAkey2 != null){
@@ -78,8 +87,22 @@ public class ContactDetailActivity extends Activity {
 				number.setText(extraNumber);
 				number.setEnabled(false);
 				del.setEnabled(true);
+				send.setEnabled(true);
 			}
 		}
+		
+		send.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(getApplicationContext(), NewSmsActivity.class);
+				i.putExtra("nick", extraNick);
+				i.putExtra("number", extraNumber);
+				i.putExtra("pubKey", extraPubKey);
+				i.putExtra("seed", extraSeed);
+				startActivity(i);
+			}
+		});
 
 		if(!nick.isEnabled()) save.setText("Update");
 
@@ -164,5 +187,11 @@ public class ContactDetailActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		return ActivityHelper.getInstance().onOptionsItemSelected(thisActivity, item);
+	}
+	
+	@Override
+	public void onBackPressed() {
+		Intent intent = new Intent(this, MainActivity.class);
+		this.startActivityForResult(intent, 0);
 	}
 }

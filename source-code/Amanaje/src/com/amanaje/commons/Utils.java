@@ -13,7 +13,9 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -317,6 +319,30 @@ public class Utils {
 		}
 	}
 
+	public List<String> getListParts(String source, int slot) {
+		
+
+		System.out.println(source);
+		
+		List<String> parts = new ArrayList<String>();
+		
+		int end = slot;
+		
+		for (int i = 0; i < source.length(); i = i + slot) {
+			end = slot+i;
+			if(end > source.length()) end = end + (source.length() - end) ;
+			System.out.println(source.substring(i, end));
+			System.out.println(source.length()+" - "+end + " - " +  (source.length() - end));
+			parts.add(source.substring(i, end));
+		}
+		System.out.print(">");
+		for (String string : parts) {
+			System.out.print(string);
+		}
+		System.out.print("<");
+		return parts;
+	}
+	
 	public String getYapeaImageDir() {
 		return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/.yapea/"; 
 	}

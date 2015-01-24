@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.amanaje.activities.MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,21 +23,28 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.amanaje.activities.SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
         <activity
-            android:name="com.amanaje.activities.PrivContactsActivity"
+            android:name=".activities.PrivContactsActivity"
             android:label="@string/title_activity_priv_contacts" >
         </activity>
         <activity
-            android:name="com.amanaje.activities.ContactDetailActivity"
+            android:name=".activities.ContactDetailActivity"
             android:label="@string/title_activity_contact_detail" >
         </activity>
         <activity
-            android:name=".MessageActivity"
+            android:name=".activities.MessageActivity"
             android:label="@string/title_activity_message" >
         </activity>
+        <activity
+            android:name="com.amanaje.activities.NewSmsActivity"
+            android:label="@string/title_activity_new_sms" >
+        </activity>
     </application>
+
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
 </manifest>

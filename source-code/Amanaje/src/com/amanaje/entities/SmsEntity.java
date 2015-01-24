@@ -5,6 +5,23 @@ public class SmsEntity {
 	private String body = null;
 	private String address = null;
 	private long date = -0l;
+	private String pubKey = null;
+	private String seed = null;
+	
+	
+	
+	public String getPubKey() {
+		return pubKey;
+	}
+	public void setPubKey(String pubKey) {
+		this.pubKey = pubKey;
+	}
+	public String getSeed() {
+		return seed;
+	}
+	public void setSeed(String seed) {
+		this.seed = seed;
+	}
 	public String getBody() {
 		return body;
 	}
@@ -29,6 +46,9 @@ public class SmsEntity {
 		this.body = body;
 		this.address = address;
 		this.date = date;
+	}
+	public SmsEntity() {
+		// TODO Auto-generated constructor stub
 	}
 	
 	

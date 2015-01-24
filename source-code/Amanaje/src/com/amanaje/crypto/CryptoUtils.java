@@ -1,10 +1,12 @@
 package com.amanaje.crypto;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -13,7 +15,6 @@ import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.PublicKey;
 import java.security.Security;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
@@ -30,11 +31,13 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.jdamico.bc.openpgp.utils.PgpHelper;
 import org.jdamico.bc.openpgp.utils.RSAKeyPairGenerator;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPException;
 
 import android.content.Context;
+import android.util.Base64;
 
 import com.amanaje.commons.AppException;
 import com.amanaje.commons.AppMessages;
@@ -42,7 +45,6 @@ import com.amanaje.commons.Constants;
 import com.amanaje.commons.StaticObj;
 import com.amanaje.commons.Utils;
 import com.amanaje.entities.CryptoAlgoEntity;
-import com.amanaje.entities.OpenPgpEntity;
 
 public class CryptoUtils {
 
@@ -64,7 +66,7 @@ public class CryptoUtils {
 
 		KeyPairGenerator kpg = null;
 		try {
-			kpg = KeyPairGenerator.getInstance("RSA", "BC");
+			kpg = KeyPairGenerator.getInstance("RSA", "SC");
 		} catch (NoSuchAlgorithmException e) {
 			throw new AppException(e);
 		} catch (NoSuchProviderException e) {
@@ -117,12 +119,12 @@ public class CryptoUtils {
 		String pubHex = null; 
 		
 		try {
-			pubHex = Utils.getInstance().byteArrayToHexString(out1.toByteArray());
+			pubHex = Utils.getInstance().byteArrayToHexString(out2.toByteArray());
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		try {
-			privHex = Utils.getInstance().byteArrayToHexString(out2.toByteArray());
+			privHex = Utils.getInstance().byteArrayToHexString(out1.toByteArray());
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -325,4 +327,103 @@ public class CryptoUtils {
 		return decStrKey;
 	} 
 
+	public byte[] encryptOpenPgp(byte[] pubKeyByteArray, String plainText, File msgFile) throws AppException {
+		
+		InputStream pubKeyIs = null;
+		ByteArrayOutputStream cipheredOutputStream = null;
+		try {
+			pubKeyIs = new ByteArrayInputStream(pubKeyByteArray);
+			cipheredOutputStream = new ByteArrayOutputStream();
+			PgpHelper.getInstance().encryptFile(cipheredOutputStream, msgFile, PgpHelper.getInstance().readPublicKey(pubKeyIs), true, true);
+		} catch (NoSuchProviderException e) {
+			throw new AppException(e);
+		} catch (IOException e) {
+			throw new AppException(e);
+		} catch (PGPException e) {
+			e.printStackTrace();
+			//throw new AppException(e);
+		}finally{
+			
+			if(cipheredOutputStream != null)
+				try {
+					cipheredOutputStream.flush();
+				} catch (IOException e) {
+					throw new AppException(e);
+				}
+				
+				try {
+					cipheredOutputStream.close();
+				} catch (IOException e) {
+					throw new AppException(e);
+				}
+				
+			if(pubKeyIs != null)
+				try {
+					pubKeyIs.close();
+				} catch (IOException e) {
+					throw new AppException(e);
+				}
+			
+			
+		}
+		return cipheredOutputStream.toByteArray();
+		
+	}
+
+	public String decryptOpenPgp(Context ctx, String b64Ciphered, String passwd) throws AppException{
+		
+		String plainText = null;
+		InputStream privKeyIn = null;
+		File privKeyFile = new File(ctx.getFilesDir(), Constants.PRIV_KEY_FILE_LOCATION);
+		String hexPrivKey = Utils.getInstance().getStringFromFile(privKeyFile);
+		byte[] byteArrayPrivKey = Utils.getInstance().hexStringToByteArray(hexPrivKey);
+		
+		byte[] byteArrayCiphered = Base64.decode(b64Ciphered, Base64.DEFAULT);;
+		InputStream cipheredIs = null;
+		ByteArrayOutputStream plainTextOs = null;
+//		FileInputStream cipheredFileIs = new FileInputStream(cipherTextFile);
+		try {
+			cipheredIs = new ByteArrayInputStream(byteArrayCiphered);
+			privKeyIn = new ByteArrayInputStream(byteArrayPrivKey);
+			plainTextOs = new ByteArrayOutputStream();
+			PgpHelper.getInstance().decryptFile(cipheredIs, plainTextOs, privKeyIn, passwd.toCharArray());
+			
+			byte[] plainTextBa = plainTextOs.toByteArray();
+			String plainTextHex = Utils.getInstance().byteArrayToHexString(plainTextBa);
+			
+			plainText = new String(plainTextOs.toByteArray());
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(cipheredIs != null)
+				try {
+					cipheredIs.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			if(plainTextOs != null){
+				try {
+					plainTextOs.flush();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				try {
+					plainTextOs.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+//		cipheredFileIs.close();
+//		plainTextFileIs.close();
+//		privKeyIn.close();
+		
+		return plainText;
+	}
+	
 }

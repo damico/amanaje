@@ -3,23 +3,24 @@ package com.amanaje.asynctasks;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.telephony.SmsManager;
+import android.util.Base64;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.amanaje.R;
 import com.amanaje.activities.ContactDetailActivity;
-import com.amanaje.activities.MessageActivity;
+import com.amanaje.activities.NewSmsActivity;
+import com.amanaje.activities.PrivContactsActivity;
 import com.amanaje.commons.AppException;
 import com.amanaje.commons.AppMessages;
 import com.amanaje.commons.Constants;
@@ -27,6 +28,8 @@ import com.amanaje.commons.Utils;
 import com.amanaje.crypto.CryptoUtils;
 import com.amanaje.entities.ConfigEntity;
 import com.amanaje.entities.OpenPgpEntity;
+import com.amanaje.entities.SmsEntity;
+import com.amanaje.view.adapters.StableArrayAdapter;
 
 public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 
@@ -37,7 +40,7 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 	private List<ConfigEntity> cfgContactEntityLst = null;
 	private ListView listview = null;
 	private List<String> contacts = null;
-	private boolean updateContactsLv = false;
+	private int currentTask = -1;
 
 	public AsyncTaskManager(Activity activity, int type, Object obj){
 		this.type = type;
@@ -143,21 +146,77 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 					ConfigEntity element = cfgContactEntityLst.get(position);
 
-					System.out.println("=================>  aKey1  "+element.getActivationKey1());
-					System.out.println("=================>  aKey2  "+element.getActivationKey2());
-
 					Intent i = new Intent(activity, ContactDetailActivity.class);
 					i.putExtra("nick", element.getNick());
+					i.putExtra("fileName", element.getConfigFileName());
 					i.putExtra("number", element.getNumber());
 					i.putExtra("pubkey", element.getPublicKey());
 					i.putExtra("aKey1", element.getActivationKey1());
 					i.putExtra("aKey2", element.getActivationKey2());
+					i.putExtra("seed", element.getSeed());
 					i.putExtra("thisContactFileName", element.getConfigFileName());
 					activity.startActivity(i);
 				}
 			});
-			updateContactsLv = true;
+			currentTask = Constants.LIST_CONTACTS_TYPE;
 			break;
+			
+		case Constants.SEND_SMS_TYPE:
+			
+			SmsEntity smsEntity = (SmsEntity) obj;
+			File msgFile = new File(activity.getFilesDir(), Constants.TEMP_FILE);
+
+			byte[] pubKeyByteArray = null;
+			
+			try {
+				
+				System.out.println("PRE ENC **************************** - smsEntity.getBody(): "+smsEntity.getBody());
+				//Utils.getInstance().writeTextToFile(msgFile, smsEntity.getBody());
+				
+				String demo = "The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The qui";
+				
+				smsEntity.setBody(demo);
+				Utils.getInstance().writeTextToFile(msgFile, smsEntity.getBody());
+				
+				//System.out.println(smsEntity.getPubKey());
+				
+				pubKeyByteArray = Utils.getInstance().hexStringToByteArray(smsEntity.getPubKey());
+				
+				
+				System.out.println("PRE ENC - smsEntity.getBody(): "+smsEntity.getBody());
+				
+				byte[] encByteArray = CryptoUtils.getInstance().encryptOpenPgp(pubKeyByteArray, smsEntity.getBody(), msgFile);
+				SmsManager sms = SmsManager.getDefault();
+				
+				String base64 = Base64.encodeToString(encByteArray, Base64.DEFAULT);
+				
+				List<String> parts = Utils.getInstance().getListParts(base64, 140);
+				
+				Date dt = new Date();
+				
+				long epoch = dt.getTime()/1000;
+				String sEpoch = String.valueOf(epoch);
+				int c = 1;
+				
+				
+				for (String part : parts) {
+					
+					part = sEpoch + ":"+String.valueOf(c)+":"+String.valueOf(parts.size())+":"+part;
+					//System.out.println("=====> "+part.length()+" - "+part);
+				  //  sms.sendTextMessage(smsEntity.getAddress(), null, part, null, null);
+				    c++;
+				}
+				
+				
+			} catch (AppException e) {
+				e.printStackTrace();
+			
+			}finally{
+				msgFile.delete();
+			}
+			currentTask = Constants.SEND_SMS_TYPE;
+			break;
+			
 		default:
 			break;
 		}
@@ -170,35 +229,25 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 		if (dialog.isShowing()) {
 			dialog.dismiss();
 		}
-		if(updateContactsLv) {
+		
+		switch (currentTask) {
+		
+		case Constants.SEND_SMS_TYPE:
+			Intent i = new Intent(activity, PrivContactsActivity.class);
+			activity.startActivity(i);
+			break;
+			
+		case Constants.LIST_CONTACTS_TYPE:
 			final StableArrayAdapter adapter = new StableArrayAdapter(activity, android.R.layout.simple_list_item_1, contacts);
 			listview.setAdapter(adapter);
+			break;
+
+		default:
+			break;
 		}
+		
 	}
 
-	private class StableArrayAdapter extends ArrayAdapter<String> {
-
-		HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
-
-		public StableArrayAdapter(Context context, int textViewResourceId,
-				List<String> objects) {
-			super(context, textViewResourceId, objects);
-			for (int i = 0; i < objects.size(); ++i) {
-				mIdMap.put(objects.get(i), i);
-			}
-		}
-
-		@Override
-		public long getItemId(int position) {
-			String item = getItem(position);
-			return mIdMap.get(item);
-		}
-
-		@Override
-		public boolean hasStableIds() {
-			return true;
-		}
-
-	}
+	
 
 }

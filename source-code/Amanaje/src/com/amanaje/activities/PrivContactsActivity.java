@@ -6,6 +6,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -49,5 +50,10 @@ public class PrivContactsActivity extends Activity {
 		return ActivityHelper.getInstance().onOptionsItemSelected(thisActivity, item);
 	}
 	
+	@Override
+	public void onBackPressed() {
+		Intent intent = new Intent(this, MainActivity.class);
+		this.startActivityForResult(intent, 0);
+	}
 
 }
