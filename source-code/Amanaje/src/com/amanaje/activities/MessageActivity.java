@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.amanaje.asynctasks.AsyncTaskManager;
 import com.amanaje.commons.ActivityHelper;
 import com.amanaje.commons.AppException;
 import com.amanaje.commons.Constants;
+import com.amanaje.commons.Utils;
 import com.amanaje.crypto.CryptoUtils;
 import com.amanaje.entities.SmsEntity;
 
@@ -49,8 +51,6 @@ public class MessageActivity extends Activity {
 		if (extras != null) {
 		    body = extras.getString("body");
 		    address = extras.getString("address");
-		    
-		    
 
 			extraPubKey  = extras.getString("pubKey");
 			extraSeed  = extras.getString("seed");
@@ -69,7 +69,12 @@ public class MessageActivity extends Activity {
 		String dec = null;
 		
 		try {
-			dec = CryptoUtils.getInstance().decryptOpenPgp(getApplicationContext(), body, "qwer");
+			byte[] byteArrayCiphered = Base64.decode(body, Base64.DEFAULT);
+			
+			System.out.println("smsEntity.getSeed(): "+smsEntity.getSeed());
+			
+			byte[] decSymetric = CryptoUtils.getInstance().decSymetric(getApplicationContext(), smsEntity.getSeed(), byteArrayCiphered, "BLOWFISH");
+			dec = CryptoUtils.getInstance().decryptOpenPgp(getApplicationContext(), decSymetric, "qwer");
 
 		} catch (AppException e) {
 			e.printStackTrace();

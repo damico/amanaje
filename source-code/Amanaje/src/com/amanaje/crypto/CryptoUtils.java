@@ -177,7 +177,8 @@ public class CryptoUtils {
 		return secret;
 	}
 
-	public byte[] enc(Context context, String password, byte[] plainContent, String algo) throws AppException{
+
+	public byte[] encSymetric(Context context, String password, byte[] plainContent, String algo) throws AppException{
 
 		byte[] cipherContent = null;
 		CryptoAlgoEntity cryptoObj = getCryptoAlgoObjByAlgo(algo);
@@ -211,7 +212,7 @@ public class CryptoUtils {
 
 
 
-	public byte[] dec(Context context, String password, byte[] cipherContent, String algo) throws AppException {
+	public byte[] decSymetric(Context context, String password, byte[] cipherContent, String algo) throws AppException {
 
 		byte[] plainContent = null;
 		CryptoAlgoEntity cryptoObj = getCryptoAlgoObjByAlgo(algo);
@@ -293,7 +294,7 @@ public class CryptoUtils {
 
 		String encHexKey = null;
 		try {
-			byte[] encKey = enc(context, genKeyInCachePassword(context), key.getBytes("UTF-8"), "AES");
+			byte[] encKey = encSymetric(context, genKeyInCachePassword(context), key.getBytes("UTF-8"), "AES");
 			encHexKey = Utils.getInstance().byteArrayToHexString(encKey);
 		} catch (UnsupportedEncodingException e) {
 			throw new AppException(e);
@@ -320,7 +321,7 @@ public class CryptoUtils {
 		byte[] decKey = null;
 		String decStrKey = null;
 		if(StaticObj.PRIV_KEY_PASSWD != null){
-			decKey = dec(context,  genKeyInCachePassword(context), Utils.getInstance().hexStringToByteArray(StaticObj.PRIV_KEY_PASSWD), "AES");
+			decKey = decSymetric(context,  genKeyInCachePassword(context), Utils.getInstance().hexStringToByteArray(StaticObj.PRIV_KEY_PASSWD), "AES");
 			decStrKey = new String(decKey);
 		}
 
@@ -370,7 +371,7 @@ public class CryptoUtils {
 		
 	}
 
-	public String decryptOpenPgp(Context ctx, String b64Ciphered, String passwd) throws AppException{
+	public String decryptOpenPgp(Context ctx, byte[] byteArrayCiphered, String passwd) throws AppException{
 		
 		String plainText = null;
 		InputStream privKeyIn = null;
@@ -378,7 +379,7 @@ public class CryptoUtils {
 		String hexPrivKey = Utils.getInstance().getStringFromFile(privKeyFile);
 		byte[] byteArrayPrivKey = Utils.getInstance().hexStringToByteArray(hexPrivKey);
 		
-		byte[] byteArrayCiphered = Base64.decode(b64Ciphered, Base64.DEFAULT);;
+
 		InputStream cipheredIs = null;
 		ByteArrayOutputStream plainTextOs = null;
 //		FileInputStream cipheredFileIs = new FileInputStream(cipherTextFile);
