@@ -170,7 +170,7 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 			
 			try {
 				
-				System.out.println("PRE ENC **************************** - smsEntity.getBody(): "+smsEntity.getBody());
+				//System.out.println("PRE ENC **************************** - smsEntity.getBody(): "+smsEntity.getBody());
 				//Utils.getInstance().writeTextToFile(msgFile, smsEntity.getBody());
 				
 				String demo = "The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The qui";
@@ -183,13 +183,23 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 				pubKeyByteArray = Utils.getInstance().hexStringToByteArray(smsEntity.getPubKey());
 				
 				
-				System.out.println("PRE ENC - smsEntity.getBody(): "+smsEntity.getBody());
+				//System.out.println("PRE ENC - smsEntity.getBody(): "+smsEntity.getBody());
 				
 				byte[] encByteArray = CryptoUtils.getInstance().encryptOpenPgp(pubKeyByteArray, smsEntity.getBody(), msgFile);
+				
+				
+				System.out.println("smsEntity.getSeed(): "+smsEntity.getSeed());
+				
+				byte[] doubleEncByteArray = CryptoUtils.getInstance().encSymetric(activity, smsEntity.getSeed(), encByteArray, "BLOWFISH");
+				
+				
 				SmsManager sms = SmsManager.getDefault();
 				
-				String base64 = Base64.encodeToString(encByteArray, Base64.DEFAULT);
+				String base64a = Base64.encodeToString(encByteArray, Base64.DEFAULT);
+				String base64 = Base64.encodeToString(doubleEncByteArray, Base64.DEFAULT);
 				
+				System.out.println("=====> base64a: "+base64a);
+				System.out.println("=====> base64: "+base64);
 				List<String> parts = Utils.getInstance().getListParts(base64, 140);
 				
 				Date dt = new Date();
@@ -202,7 +212,7 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 				for (String part : parts) {
 					
 					part = sEpoch + ":"+String.valueOf(c)+":"+String.valueOf(parts.size())+":"+part;
-					//System.out.println("=====> "+part.length()+" - "+part);
+					System.out.println("=====> "+part.length()+" - "+c);
 				  //  sms.sendTextMessage(smsEntity.getAddress(), null, part, null, null);
 				    c++;
 				}
