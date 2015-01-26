@@ -6,6 +6,19 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:stretchColumns="1" >
+        
+        <TableRow
+            android:id="@+id/tableRowSendSms"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/sendSmsBt"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Send SMS" />
+            
+        </TableRow>
 
         <TableRow
             android:id="@+id/tableRow1"
@@ -76,6 +89,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
+                    android:gravity="center_vertical|top"
                     android:inputType="textMultiLine"
                     android:lines="5" >
 

@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 
 import com.amanaje.R;
 import com.amanaje.asynctasks.AsyncTaskManager;
+import com.amanaje.commons.ActivityHelper;
 import com.amanaje.commons.Constants;
 import com.amanaje.entities.OpenPgpEntity;
 
@@ -40,7 +42,7 @@ public class SettingsActivity extends Activity {
 		builder = new AlertDialog.Builder(this);
 		privKeyPassword = (EditText) findViewById(R.id.privKeyPasswordEt);
 		myPhoneNumber = (EditText) findViewById(R.id.myPhoneNumberEt);
-		genKeyPair = (Button) findViewById(R.id.delMsgBt);
+		genKeyPair = (Button) findViewById(R.id.genKeyPairBt);
 		copyPubKey = (Button) findViewById(R.id.copyPubKeyBt);
 		copyPubKey.setEnabled(false);
 		
@@ -56,7 +58,7 @@ public class SettingsActivity extends Activity {
 				aTaskMan.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
 				String result = null;
 				try {
-					result = aTaskMan.get();
+					result = (String) aTaskMan.get();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -139,20 +141,18 @@ public class SettingsActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.settings, menu);
+		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
+		return ActivityHelper.getInstance().onOptionsItemSelected(thisActivity, item);
+	}
+	
+	@Override
+	public void onBackPressed() {
+		Intent intent = new Intent(this, MainActivity.class);
+		this.startActivityForResult(intent, 0);
 	}
 }

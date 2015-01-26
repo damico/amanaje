@@ -3,6 +3,7 @@ package com.amanaje.activities;
 import java.io.File;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -23,6 +24,7 @@ public class ContactDetailActivity extends Activity {
 
 	private AsyncTaskManager aTaskMan = null;
 	private Button save = null;
+	private Button send = null;
 	private Button del = null;
 	private EditText nick = null;
 	private EditText number = null;
@@ -33,9 +35,12 @@ public class ContactDetailActivity extends Activity {
 	private String extraNick = null;
 	private String extraNumber = null;
 	private String extraPubKey = null;
+	private String extraFileName = null;
+	private String extraSeed = null;
 	private String extraAkey1 = null;
 	private String extraAkey2 = null;
 	private String thisContactFileName = null;
+	private File thisContact = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,12 +48,15 @@ public class ContactDetailActivity extends Activity {
 		setContentView(R.layout.activity_contact_detail);
 
 		save = 		(Button) 	findViewById(R.id.saveContactBt);
+		send = 		(Button) 	findViewById(R.id.sendSmsBt);
 		del = 		(Button) 	findViewById(R.id.delContactBt);
 		nick = 		(EditText) 	findViewById(R.id.nickContactEt);
 		number = 	(EditText) 	findViewById(R.id.numberContactEt);
 		aKey1 = 	(EditText) 	findViewById(R.id.actKey1ContactEt);
 		aKey2 = 	(EditText) 	findViewById(R.id.actKey2ContactEt);
 		pubKey = 	(EditText) 	findViewById(R.id.pubKeyContactEt);
+		del.setEnabled(false);
+		send.setEnabled(false);
 
 		thisActivity = this;
 
@@ -57,8 +65,13 @@ public class ContactDetailActivity extends Activity {
 			extraNick = extras.getString("nick");
 			extraNumber = extras.getString("number");
 			extraPubKey  = extras.getString("pubkey");
+			
 			extraAkey1 = extras.getString("aKey1"); 
 			extraAkey2 = extras.getString("aKey2");
+			
+			extraSeed = extras.getString("seed");
+			extraFileName = extras.getString("fileName");
+			
 			thisContactFileName = extras.getString("thisContactFileName");
 			
 			if(extraAkey1 != null && extraAkey2 != null){
@@ -66,15 +79,30 @@ public class ContactDetailActivity extends Activity {
 				aKey2.setText(extraAkey2);
 			}
 
-			if(extraPubKey != null) aKey1.setText(extraAkey1);
+			if(extraPubKey != null) pubKey.setText(extraPubKey);
 
 			if(extraNick != null && extraNumber != null){
 				nick.setText(extraNick);
 				nick.setEnabled(false);
 				number.setText(extraNumber);
 				number.setEnabled(false);
+				del.setEnabled(true);
+				send.setEnabled(true);
 			}
 		}
+		
+		send.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(getApplicationContext(), NewSmsActivity.class);
+				i.putExtra("nick", extraNick);
+				i.putExtra("number", extraNumber);
+				i.putExtra("pubKey", extraPubKey);
+				i.putExtra("seed", extraSeed);
+				startActivity(i);
+			}
+		});
 
 		if(!nick.isEnabled()) save.setText("Update");
 
@@ -121,11 +149,21 @@ public class ContactDetailActivity extends Activity {
 
 				if(err == 0){
 					
-					File thisContact = new File(getFilesDir(), thisContactFileName);
-					if(!nick.isEnabled()) thisContact.delete();
+					String message = "User added.";
+					
+					if(!nick.isEnabled()){
+						thisContact = new File(getFilesDir(), thisContactFileName);
+						thisContact.delete();
+						message = "User updated.";
+					}
 					ConfigEntity configEntity = new ConfigEntity(nick.getText().toString(), number.getText().toString(), null, pubKey.getText().toString(), aKey1.getText().toString(), aKey2.getText().toString());
 					aTaskMan = new AsyncTaskManager(thisActivity, Constants.SAVE_CONTACT_TYPE, configEntity);
 					aTaskMan.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+					
+					ActivityHelper.getInstance().showAlertDialog(thisActivity, "Success", message);
+					
+					Intent i = new Intent(getApplicationContext(), PrivContactsActivity.class);
+					startActivity(i);
 				}
 			}
 		});
@@ -134,7 +172,7 @@ public class ContactDetailActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
+				if(!nick.isEnabled()) thisContact.delete();
 
 			}
 		});
@@ -142,20 +180,18 @@ public class ContactDetailActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.contact_detail, menu);
+		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
+		return ActivityHelper.getInstance().onOptionsItemSelected(thisActivity, item);
+	}
+	
+	@Override
+	public void onBackPressed() {
+		Intent intent = new Intent(this, MainActivity.class);
+		this.startActivityForResult(intent, 0);
 	}
 }

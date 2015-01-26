@@ -45,21 +45,21 @@ public class TestBCOpenPGP {
 
 		KeyPair                    kp = kpg.generateKeyPair();
 
-		FileOutputStream    out1 = new FileOutputStream(privKeyFile);
-		FileOutputStream    out2 = new FileOutputStream(pubKeyFile);
+		FileOutputStream    privOut1 = new FileOutputStream(privKeyFile);
+		FileOutputStream    pubOut2 = new FileOutputStream(pubKeyFile);
 
-		rkpg.exportKeyPair(out1, out2, kp.getPublic(), kp.getPrivate(), id, passwd.toCharArray(), isArmored);
+		rkpg.exportKeyPair(privOut1, pubOut2, kp.getPublic(), kp.getPrivate(), id, passwd.toCharArray(), isArmored);
 
 
 	}
 
 	@Test
 	public void encrypt() throws NoSuchProviderException, IOException, PGPException{
-		FileInputStream pubKeyIs = new FileInputStream(pubKeyFile);
-		FileOutputStream cipheredFileIs = new FileOutputStream(cipherTextFile);
-		PgpHelper.getInstance().encryptFile(cipheredFileIs, plainTextFile, PgpHelper.getInstance().readPublicKey(pubKeyIs), isArmored, integrityCheck);
-		cipheredFileIs.close();
-		pubKeyIs.close();
+//		FileInputStream pubKeyIs = new FileInputStream(pubKeyFile);
+//		FileOutputStream cipheredFileIs = new FileOutputStream(cipherTextFile);
+//		PgpHelper.getInstance().encryptFile(cipheredFileIs, plainTextFile, PgpHelper.getInstance().readPublicKey(pubKeyIs), isArmored, integrityCheck);
+//		cipheredFileIs.close();
+//		pubKeyIs.close();
 	}
 
 	@Test

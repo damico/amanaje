@@ -114,7 +114,7 @@ public class PgpHelper {
             return null;
         }
         
-        PBESecretKeyDecryptor a = new JcePBESecretKeyDecryptorBuilder(new JcaPGPDigestCalculatorProviderBuilder().setProvider("BC").build()).setProvider("BC").build(pass);
+        PBESecretKeyDecryptor a = new JcePBESecretKeyDecryptorBuilder(new JcaPGPDigestCalculatorProviderBuilder().setProvider("SC").build()).setProvider("SC").build(pass);
         
         return pgpSecKey.extractPrivateKey(a);
     }
@@ -156,7 +156,7 @@ public class PgpHelper {
             throw new IllegalArgumentException("Secret key for message not found.");
         }
 
-        PublicKeyDataDecryptorFactory b = new JcePublicKeyDataDecryptorFactoryBuilder().setProvider("BC").setContentProvider("BC").build(sKey);
+        PublicKeyDataDecryptorFactory b = new JcePublicKeyDataDecryptorFactoryBuilder().setProvider("SC").setContentProvider("SC").build(sKey);
         
         InputStream clear = pbe.getDataStream(b);
 
@@ -191,9 +191,7 @@ public class PgpHelper {
         }
     }
 
-    public void encryptFile(OutputStream out, String fileName,
-        PGPPublicKey encKey, boolean armor, boolean withIntegrityCheck)
-        throws IOException, NoSuchProviderException, PGPException
+    public void encryptFile(OutputStream out, File msgFile, PGPPublicKey encKey, boolean armor, boolean withIntegrityCheck) throws IOException, NoSuchProviderException, PGPException
     {
     	Security.addProvider(new BouncyCastleProvider());
 
@@ -203,15 +201,13 @@ public class PgpHelper {
 
         ByteArrayOutputStream bOut = new ByteArrayOutputStream();
 
-        PGPCompressedDataGenerator comData = new PGPCompressedDataGenerator(
-            PGPCompressedData.ZIP);
+        PGPCompressedDataGenerator comData = new PGPCompressedDataGenerator(PGPCompressedData.ZIP);
 
-        	PGPUtil.writeFileToLiteralData(comData.open(bOut),
-            PGPLiteralData.BINARY, new File(fileName));
-
+        PGPUtil.writeFileToLiteralData(comData.open(bOut), PGPLiteralData.BINARY, msgFile);
+        
         comData.close();
 
-        JcePGPDataEncryptorBuilder c = new JcePGPDataEncryptorBuilder(PGPEncryptedData.CAST5).setWithIntegrityPacket(withIntegrityCheck).setSecureRandom(new SecureRandom()).setProvider("BC");
+        JcePGPDataEncryptorBuilder c = new JcePGPDataEncryptorBuilder(PGPEncryptedData.CAST5).setWithIntegrityPacket(withIntegrityCheck).setSecureRandom(new SecureRandom()).setProvider("SC");
         
         PGPEncryptedDataGenerator cPk = new PGPEncryptedDataGenerator(c);
         
