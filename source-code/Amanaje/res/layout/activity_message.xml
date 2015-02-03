@@ -1,12 +1,11 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    android:layout_width="wrap_content"
     android:layout_height="fill_parent"
-    android:layout_gravity="fill_horizontal" >
+    android:layout_gravity="top" >
 
     <TableLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_gravity="fill_horizontal|center_horizontal"
         android:stretchColumns="1" >
 
         <TableRow
@@ -25,41 +24,37 @@
                     android:layout_height="wrap_content"
                     android:text="Password: " />
 
+                <EditText
+                    android:id="@+id/privKeyPasswdEd"
+                    android:layout_width="172dp"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="textPassword" />
+
+                <Button
+                    android:id="@+id/decBt"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Decrypt" />
+
             </LinearLayout>
-
-            <EditText
-                android:id="@+id/privKeyPasswdEd"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:ems="10"
-                android:inputType="textPassword" />
-
-            <Button
-                android:id="@+id/decBt"
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:text="Decrypt" />
 
         </TableRow>
 
         <TableRow
             android:id="@+id/tableRow1"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+            android:layout_width="fill_parent" >
 
             <TextView
                 android:id="@+id/messageTv"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:ellipsize="none"
                 android:lines="5"
                 android:scrollHorizontally="false"
                 android:scrollbars="vertical"
-                android:text="Message" />
+                android:text="..." />
 
         </TableRow>
 

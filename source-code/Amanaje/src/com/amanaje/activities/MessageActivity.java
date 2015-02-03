@@ -1,10 +1,13 @@
 package com.amanaje.activities;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.util.concurrent.ExecutionException;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +22,7 @@ import com.amanaje.commons.ActivityHelper;
 import com.amanaje.commons.AppException;
 import com.amanaje.commons.Constants;
 import com.amanaje.commons.Utils;
-import com.amanaje.crypto.CryptoUtils;
+import com.amanaje.entities.ConfigEntity;
 import com.amanaje.entities.SmsEntity;
 
 public class MessageActivity extends Activity {
@@ -29,72 +32,122 @@ public class MessageActivity extends Activity {
 	private Activity thisActivity = null;
 	private AsyncTaskManager aTaskMan = null;
 	private SmsEntity smsEntity = null;
-	
-	private String extraNumber = null;
+
+	private long extraEpoch = -0l;
 	private String extraPubKey = null;
 	private String extraSeed = null;
-	
+
 	TextView msgTv = null;
 	EditText replyEt = null;
 	Button decryptBt = null;
 	Button replyBt = null;
 	Button delBt = null;
-	
+	EditText privKeyPasswd = null;
+
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_message);
-		
+
 		thisActivity = this;
-		
+
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-		    body = extras.getString("body");
-		    address = extras.getString("address");
+			body = extras.getString("body");
+			address = extras.getString("address");
 
 			extraPubKey  = extras.getString("pubKey");
 			extraSeed  = extras.getString("seed");
-			
+			extraEpoch = extras.getLong("epoch");
+
 			smsEntity = new SmsEntity();
 			smsEntity.setAddress(address);
-			
+			smsEntity.setDate(extraEpoch);
+			smsEntity.setBody(body);
 			smsEntity.setPubKey(extraPubKey);
 			smsEntity.setSeed(extraSeed);
-		}
-		
-		msgTv = (TextView) findViewById(R.id.messageTv);
-		replyEt = (EditText) findViewById(R.id.replyEt);
-		decryptBt = (Button) findViewById(R.id.decBt);
-		
-		String dec = null;
-		
-		try {
-			byte[] byteArrayCiphered = Base64.decode(body, Base64.DEFAULT);
-			
-			System.out.println("smsEntity.getSeed(): "+smsEntity.getSeed());
-			
-			byte[] decSymetric = CryptoUtils.getInstance().decSymetric(getApplicationContext(), smsEntity.getSeed(), byteArrayCiphered, "BLOWFISH");
-			dec = CryptoUtils.getInstance().decryptOpenPgp(getApplicationContext(), decSymetric, "qwer");
 
-		} catch (AppException e) {
-			e.printStackTrace();
+			ConfigEntity cfgContactEntity = null;
+			try {
+				String hexNumber = Utils.getInstance().byteArrayToHexString(address.getBytes());
+				String fileName = Constants.PUB_KEY_FILE_LOCATION+"."+hexNumber;
+				File contactFile = new File(getFilesDir(), fileName);
+				cfgContactEntity = null;
+				cfgContactEntity = (Utils.getInstance().configFileToConfigEntity(contactFile));
+				cfgContactEntity.setConfigFileName(fileName);
+				smsEntity.setPubKey(cfgContactEntity.getPublicKey());
+				smsEntity.setSeed(cfgContactEntity.getSeed());
+			} catch (UnsupportedEncodingException e1) {
+				e1.printStackTrace();
+			} catch (AppException e) {
+				e.printStackTrace();
+			}
+
+
 		}
-		
-		msgTv.setText(address+": "+dec);
-		
+
+		msgTv = (TextView) findViewById(R.id.messageTv);
+		replyBt = (Button) findViewById(R.id.replyMsgBt);
+		replyBt.setEnabled(false);
+		replyEt = (EditText) findViewById(R.id.replyEt);
+		replyEt.setEnabled(false);
+		decryptBt = (Button) findViewById(R.id.decBt);
+		privKeyPasswd = (EditText) findViewById(R.id.privKeyPasswdEd);
+
+
+		privKeyPasswd.requestFocus();
+
 		replyBt.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				
+
 				smsEntity.setBody(replyEt.getText().toString());
-				
 				aTaskMan = new AsyncTaskManager(thisActivity, Constants.SEND_SMS_TYPE, smsEntity);
 				aTaskMan.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+
 			}
 		});
-		
-		
+
+
+		decryptBt.setOnClickListener(new OnClickListener() {
+
+
+
+			String dec = null;
+
+			@Override
+			public void onClick(View v) {
+
+				smsEntity.setPrivKeyPasswd(privKeyPasswd.getText().toString());
+				privKeyPasswd.setText("");
+				privKeyPasswd.setEnabled(false);
+				decryptBt.setEnabled(false);
+
+
+				aTaskMan = new AsyncTaskManager(thisActivity, Constants.DEC_SMS_TYPE, smsEntity);
+				aTaskMan.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+
+				try {
+					dec = aTaskMan.get();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+
+				msgTv.setText(address+": "+dec);
+				if(null != dec){
+					replyEt.setEnabled(true);
+					replyEt.requestFocus();
+					replyBt.setEnabled(true);
+				}
+			}
+		});
+
+
 	}
 
 	@Override
@@ -107,7 +160,7 @@ public class MessageActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		return ActivityHelper.getInstance().onOptionsItemSelected(thisActivity, item);
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 		Intent intent = new Intent(this, MainActivity.class);

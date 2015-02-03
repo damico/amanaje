@@ -63,31 +63,6 @@
     </TableRow>
 
     <TableRow
-        android:id="@+id/tableRow1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <Button
-                android:id="@+id/genKeyPairBt"
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Gen Key Pair" />
-
-            <Button
-                android:id="@+id/copyPubKeyBt"
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Copy Pub Key" />
-        </LinearLayout>
-    </TableRow>
-
-    <TableRow
         android:id="@+id/tableRow2"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
@@ -103,7 +78,7 @@
                 android:text="Activation Key 1:" />
 
             <EditText
-                android:id="@+id/replyEt"
+                android:id="@+id/aKey1Et"
                 android:layout_width="178dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|fill_horizontal|top"
@@ -132,24 +107,37 @@
                 android:text="Activation Key 2:" />
 
             <EditText
-                android:id="@+id/numberEt"
+                android:id="@+id/aKey2Et"
                 android:layout_width="178dp"
                 android:layout_height="wrap_content"
                 android:ems="10" />
         </LinearLayout>
+
+        
+
     </TableRow>
+<TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
 
-    <TableRow
-        android:id="@+id/tableRow6"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
 
-        <Button
-            android:id="@+id/replyMsgBt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="21dp"
-            android:text="Gen Seed" />
-    </TableRow>
+                <Button
+                    android:id="@+id/genKeyPairBt"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Save Settings" />
 
+                <Button
+                    android:id="@+id/copyPubKeyBt"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Copy Pub Key" />
+            </LinearLayout>
+        </TableRow>
 </TableLayout>

@@ -7,9 +7,16 @@ public class SmsEntity {
 	private long date = -0l;
 	private String pubKey = null;
 	private String seed = null;
+	private String privKeyPasswd = null;
 	
 	
 	
+	public String getPrivKeyPasswd() {
+		return privKeyPasswd;
+	}
+	public void setPrivKeyPasswd(String privKeyPasswd) {
+		this.privKeyPasswd = privKeyPasswd;
+	}
 	public String getPubKey() {
 		return pubKey;
 	}

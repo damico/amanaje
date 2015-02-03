@@ -3,6 +3,7 @@ package com.amanaje.commons;
 public interface Constants {
 	
 	public static final String CONFIG_FILE = ".amanaje.config";
+	public static final String SEED_FILE = ".amanaje.seed";
 	public static final String XML_CONFIG_ROOT_TAG = "amanaje";
 	public static final String XML_CONFIG_CONTACT_TAG = "contact";
 	public static final String XML_CONFIG_CONTACT_NICK_ATTRIB = "nick";
@@ -23,6 +24,11 @@ public interface Constants {
 	public static final int SAVE_CONTACT_TYPE = 1002;
 	public static final int LIST_CONTACTS_TYPE = 1003;
 	public static final int SEND_SMS_TYPE = 1004;
+	public static final int DEC_SMS_TYPE = 1005;
+	
+	public static final int TOTP_SIZE = 6;
+	public static final long TOTP_SECONDS_INTERVAL = 30;
+	
 	
 	
 
