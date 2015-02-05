@@ -18,6 +18,8 @@ public interface Constants {
 	public static final String PRIV_KEY_FILE_LOCATION = ".amanaje.priv.key";
 	public static final String PUB_KEY_FILE_LOCATION = ".amanaje.pub.key";
 	public static final String TEMP_FILE = ".amanaje.temp";
+	public static final String VERSION = "0.1";
+	public static final String APP_NAME = "Amanaje";
 	
 	public static final int GEN_KEY_PAIR_TYPE = 1000;
 	public static final int TRANS_COPY_TYPE = 1001;

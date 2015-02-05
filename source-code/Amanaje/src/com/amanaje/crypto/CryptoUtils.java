@@ -163,9 +163,7 @@ public class CryptoUtils {
 //	}
 
 	public byte[] getSalt(Context context, Date dt){
-		String imei = Utils.getInstance().getIMEI(context);
-		if(imei != null) return imei.getBytes();
-		else return Utils.getInstance().getDeviceData(dt).getBytes();
+		return Utils.getInstance().getDeviceData(dt).getBytes();
 
 	}
 

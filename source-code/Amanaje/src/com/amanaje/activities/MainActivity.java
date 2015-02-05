@@ -1,5 +1,7 @@
 package com.amanaje.activities;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +27,10 @@ import android.widget.ListView;
 
 import com.amanaje.R;
 import com.amanaje.commons.ActivityHelper;
+import com.amanaje.commons.AppException;
+import com.amanaje.commons.Constants;
+import com.amanaje.commons.Utils;
+import com.amanaje.entities.ConfigEntity;
 import com.amanaje.entities.SmsEntity;
 import com.amanaje.view.adapters.StableArrayAdapter;
 
@@ -67,6 +73,8 @@ public class MainActivity extends Activity {
 		//System.out.println("============== getColumnCount() =========== "+c.getColumnCount());
 		//System.out.println("============== getCount() =========== "+c.getCount());
 
+		setTitle(Constants.APP_NAME+" "+Constants.VERSION+"");
+		
 
 		if(c.moveToFirst()){
 			for (int i = 0; i < c.getCount(); i++) {
@@ -168,8 +176,28 @@ public class MainActivity extends Activity {
 				smsEntityLvArray.add(tMap.get(idxTime));
 				Date d = new Date(idxTime);
 				String fDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(d);
-				smsStrArray.add(fDate+" "+tMap.get(idxTime).getAddress());
+				
+				String hexNumber = null;
+				try {
+					hexNumber = Utils.getInstance().byteArrayToHexString(tMap.get(idxTime).getAddress().getBytes());
+					File contact = new File(getFilesDir(), Constants.PUB_KEY_FILE_LOCATION+"."+hexNumber);
+					ConfigEntity config = Utils.getInstance().configFileToConfigEntity(contact);
+					smsStrArray.add(config.getNick()+": "+fDate);
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (AppException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				
+				
+				
 			}
+			
+			
+			
 			
 			//c.close();
 		}
