@@ -30,6 +30,7 @@ import com.amanaje.crypto.CryptoUtils;
 import com.amanaje.entities.ConfigEntity;
 import com.amanaje.entities.OpenPgpEntity;
 import com.amanaje.entities.SmsEntity;
+import com.amanaje.view.adapters.RowContactAdapter;
 import com.amanaje.view.adapters.StableArrayAdapter;
 
 public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
@@ -40,7 +41,7 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 	private Activity activity = null;
 	private List<ConfigEntity> cfgContactEntityLst = null;
 	private ListView listview = null;
-	private List<String> contacts = null;
+	private ArrayList<String> contacts = null;
 	private int currentTask = -1;
 
 	public AsyncTaskManager(Activity activity, int type, Object obj){
@@ -146,6 +147,8 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 
 
 			listview = (ListView) activity.findViewById(R.id.listviewcontacts);
+						
+			
 
 
 			listview.setOnItemClickListener(new OnItemClickListener() {
@@ -314,7 +317,8 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 			break;
 			
 		case Constants.LIST_CONTACTS_TYPE:
-			final StableArrayAdapter adapter = new StableArrayAdapter(activity, android.R.layout.simple_list_item_1, contacts);
+			//final StableArrayAdapter adapter = new StableArrayAdapter(activity, android.R.layout.simple_list_item_1, contacts);
+			final RowContactAdapter adapter = new RowContactAdapter(contacts, activity, cfgContactEntityLst);
 			listview.setAdapter(adapter);
 			break;
 

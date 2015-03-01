@@ -5,9 +5,13 @@ import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ExecutionException;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -94,6 +98,7 @@ public class MessageActivity extends Activity {
 		replyEt = (EditText) findViewById(R.id.replyEt);
 		replyEt.setEnabled(false);
 		decryptBt = (Button) findViewById(R.id.decBt);
+		delBt = (Button) findViewById(R.id.delMsgBt);
 		privKeyPasswd = (EditText) findViewById(R.id.privKeyPasswdEd);
 
 
@@ -112,6 +117,8 @@ public class MessageActivity extends Activity {
 		});
 
 
+		
+		
 		decryptBt.setOnClickListener(new OnClickListener() {
 
 
@@ -147,7 +154,8 @@ public class MessageActivity extends Activity {
 			}
 		});
 
-
+		
+		
 	}
 
 	@Override
@@ -166,4 +174,6 @@ public class MessageActivity extends Activity {
 		Intent intent = new Intent(this, MainActivity.class);
 		this.startActivityForResult(intent, 0);
 	}
+	
+	
 }
