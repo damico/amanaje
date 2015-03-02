@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -19,6 +20,8 @@ import java.security.Security;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 
 import javax.crypto.BadPaddingException;
@@ -154,21 +157,19 @@ public class CryptoUtils {
 		return ret;
 	}
 
-	public byte[] getKeyHash(Context context, char[] passwd) throws AppException{
-		byte[] salt = getSalt(context);
-		return pbkdf2(passwd, salt, salt.length, Constants.PBKDF2_KEY_LENGTH);
-	}
+//	public byte[] getKeyHash(Context context, char[] passwd) throws AppException{
+//		byte[] salt = getSalt(context);
+//		return pbkdf2(passwd, salt, salt.length, Constants.PBKDF2_KEY_LENGTH);
+//	}
 
-	public byte[] getSalt(Context context){
-		String imei = Utils.getInstance().getIMEI(context);
-		if(imei != null) return imei.getBytes();
-		else return Utils.getInstance().getDeviceData().getBytes();
+	public byte[] getSalt(Context context, Date dt){
+		return Utils.getInstance().getDeviceData(dt).getBytes();
 
 	}
 
-	private SecretKey genSecretKey(Context context, String password, String algo) throws NoSuchAlgorithmException, InvalidKeySpecException{
+	private SecretKey genSecretKey(Context context, String password, String algo, Date dt) throws NoSuchAlgorithmException, InvalidKeySpecException{
 
-		byte[] salt = getSalt(context);
+		byte[] salt = getSalt(context, dt);
 		SecretKeyFactory	factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
 		KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, salt.length, 256);
 		SecretKey tmp = factory.generateSecret(spec);
@@ -177,16 +178,40 @@ public class CryptoUtils {
 		return secret;
 	}
 
+	
+	public String genOtp(byte[] seed, long unixTime) throws AppException {
+		
+		String strOtp = null;
+		long t0		 = 0;
+		String steps	 = "0";
+		
+		long T = (unixTime - t0)/Constants.TOTP_SECONDS_INTERVAL;
+		steps = Long.toHexString(T).toUpperCase(Locale.US);
+		while(steps.length() < 16) steps = "0" + steps;
+		
+		try {
+			strOtp = (TotpImpl.getInstance().generateTOTP(seed, steps, Constants.TOTP_SIZE, "HmacSHA1") );
+			System.out.println("strOtp: "+strOtp);
+		} catch (InvalidKeyException e) {
+			throw new AppException(e);
+		} catch (UndeclaredThrowableException e) {
+			throw new AppException(e);
+		} catch (NoSuchAlgorithmException e) {
+			throw new AppException(e);
+		}
+		return strOtp;
+		
+	}
 
-	public byte[] encSymetric(Context context, String password, byte[] plainContent, String algo) throws AppException{
+	public byte[] encSymetric(Context context, String password, byte[] plainContent, String algo, Date dt) throws AppException{
 
 		byte[] cipherContent = null;
 		CryptoAlgoEntity cryptoObj = getCryptoAlgoObjByAlgo(algo);
 
 		try {
 			Cipher cipher = Cipher.getInstance(cryptoObj.getAlgoInstance()); //"AES/CBC/PKCS5Padding"
-			byte[] iv = normalizeIvByteArray(Utils.getInstance().getDeviceData().getBytes(), cryptoObj.getIvLength()); 
-			cipher.init(Cipher.ENCRYPT_MODE, genSecretKey(context, password, algo), new IvParameterSpec(iv));
+			byte[] iv = normalizeIvByteArray(Utils.getInstance().getDeviceData(dt).getBytes(), cryptoObj.getIvLength()); 
+			cipher.init(Cipher.ENCRYPT_MODE, genSecretKey(context, password, algo, dt), new IvParameterSpec(iv));
 			cipherContent = cipher.doFinal(plainContent);
 		} catch (NoSuchAlgorithmException e) {
 			throw new AppException(e);
@@ -212,15 +237,15 @@ public class CryptoUtils {
 
 
 
-	public byte[] decSymetric(Context context, String password, byte[] cipherContent, String algo) throws AppException {
+	public byte[] decSymetric(Context context, String password, byte[] cipherContent, String algo, Date dt) throws AppException {
 
 		byte[] plainContent = null;
 		CryptoAlgoEntity cryptoObj = getCryptoAlgoObjByAlgo(algo);
 
 		try {
 			Cipher cipher = Cipher.getInstance(cryptoObj.getAlgoInstance()); //"AES/CBC/PKCS5Padding"
-			byte[] iv = normalizeIvByteArray(Utils.getInstance().getDeviceData().getBytes(), cryptoObj.getIvLength()); 
-			cipher.init(Cipher.DECRYPT_MODE, genSecretKey(context, password, algo), new IvParameterSpec(iv));
+			byte[] iv = normalizeIvByteArray(Utils.getInstance().getDeviceData(dt).getBytes(), cryptoObj.getIvLength()); 
+			cipher.init(Cipher.DECRYPT_MODE, genSecretKey(context, password, algo, dt), new IvParameterSpec(iv));
 			plainContent = cipher.doFinal(cipherContent);
 
 		} catch (NoSuchAlgorithmException e) {
@@ -290,43 +315,13 @@ public class CryptoUtils {
 		return md.digest(source);
 	}
 
-	public void storeKeyInCache(String key, Context context) throws AppException{
-
-		String encHexKey = null;
-		try {
-			byte[] encKey = encSymetric(context, genKeyInCachePassword(context), key.getBytes("UTF-8"), "AES");
-			encHexKey = Utils.getInstance().byteArrayToHexString(encKey);
-		} catch (UnsupportedEncodingException e) {
-			throw new AppException(e);
-		}
-		StaticObj.PRIV_KEY_PASSWD = encHexKey;
-	}
 
 
-	public String genKeyInCachePassword(Context context) throws AppException{
-		byte[] salt = getSalt(context);
-		byte[] saltHash = genMd5(salt);
-		String hexStr = null;
-		try {
-			hexStr = Utils.getInstance().byteArrayToHexString(saltHash);
-		} catch (UnsupportedEncodingException e) {
-			throw new AppException(e);
-		}
-		return hexStr;
-	}
 
 
-	public String retrieveKeyFromCache(Context context) throws AppException{
 
-		byte[] decKey = null;
-		String decStrKey = null;
-		if(StaticObj.PRIV_KEY_PASSWD != null){
-			decKey = decSymetric(context,  genKeyInCachePassword(context), Utils.getInstance().hexStringToByteArray(StaticObj.PRIV_KEY_PASSWD), "AES");
-			decStrKey = new String(decKey);
-		}
 
-		return decStrKey;
-	} 
+
 
 	public byte[] encryptOpenPgp(byte[] pubKeyByteArray, String plainText, File msgFile) throws AppException {
 		

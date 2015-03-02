@@ -28,6 +28,8 @@ public class SettingsActivity extends Activity {
 
 	EditText privKeyPassword = null;
 	EditText myPhoneNumber = null;
+	EditText aKey1 = null;
+	EditText aKey2 = null;
 	Button genKeyPair = null;
 	Button copyPubKey = null;
 	AsyncTaskManager aTaskMan = null;
@@ -45,6 +47,8 @@ public class SettingsActivity extends Activity {
 		genKeyPair = (Button) findViewById(R.id.genKeyPairBt);
 		copyPubKey = (Button) findViewById(R.id.copyPubKeyBt);
 		copyPubKey.setEnabled(false);
+		aKey1 = (EditText) findViewById(R.id.aKey1Et);
+		aKey2 = (EditText) findViewById(R.id.aKey2Et);
 		
 		thisActivity = this;
 		
@@ -54,7 +58,7 @@ public class SettingsActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				aTaskMan = new AsyncTaskManager(thisActivity, Constants.TRANS_COPY_TYPE, new OpenPgpEntity(myPhoneNumber.getText().toString(), null));
+				aTaskMan = new AsyncTaskManager(thisActivity, Constants.TRANS_COPY_TYPE, new OpenPgpEntity(myPhoneNumber.getText().toString(), null, aKey1.getText().toString(), aKey2.getText().toString()));
 				aTaskMan.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
 				String result = null;
 				try {
@@ -130,7 +134,7 @@ public class SettingsActivity extends Activity {
 
 				if(err == 0){
 
-					aTaskMan = new AsyncTaskManager(thisActivity, Constants.GEN_KEY_PAIR_TYPE, new OpenPgpEntity(myPhoneNumber.getText().toString(), privKeyPassword.getText().toString()));
+					aTaskMan = new AsyncTaskManager(thisActivity, Constants.GEN_KEY_PAIR_TYPE, new OpenPgpEntity(myPhoneNumber.getText().toString(), privKeyPassword.getText().toString(), aKey1.getText().toString(), aKey2.getText().toString()));
 					aTaskMan.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
 					copyPubKey.setEnabled(true);
 

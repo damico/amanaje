@@ -11,9 +11,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -55,6 +58,18 @@ public class Utils {
 		(byte)'c', (byte)'d', (byte)'e', (byte)'f'
 	};   
 
+	public byte[] genMd5(byte[] source) throws AppException{
+
+		MessageDigest md = null;
+		try {
+			md = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			throw new AppException(e);
+		}
+		return md.digest(source);
+	}
+	
+	
 	public ConfigEntity getConfigFile(Context context) throws AppException {
 
 		ConfigEntity ret = null;
@@ -152,123 +167,27 @@ public class Utils {
 	}
 	
 	
-	public boolean isAuthenticated(Context context, String passwd) {
-
-		boolean isAuthenticated = false;
-		String typedHash = null;
-		String storedHash = null;
-		if(context!=null){ 
-			File file = new File(context.getFilesDir(), Constants.CONFIG_FILE);
-			try {
-				typedHash = byteArrayToHexString(CryptoUtils.getInstance().getKeyHash(context, passwd.toCharArray()));
-
-				storedHash = configFileToConfigEntity(file).getHashedKey();
-
-			} catch (Exception e) {e.printStackTrace();}
-
-			if(typedHash!=null && storedHash!=null && (typedHash.equals(storedHash)))isAuthenticated = true;
-		}
-
-		return isAuthenticated;
-	}
-
-
-	public void changeConfig(Context context, String oldPasswd, String newPasswd_a, String newPasswd_b, String algo, String panicPassword, int panicNumber) throws AppException {
-
-
-		if(context!=null){ 
-
-			File file = new File(context.getFilesDir(), Constants.CONFIG_FILE);
-
-			if(isAuthenticated(context, oldPasswd)){
-
-				if(null != newPasswd_a && null != newPasswd_b && (newPasswd_a.equals(newPasswd_b)) ){
-					byte[] hash = CryptoUtils.getInstance().getKeyHash(context, newPasswd_a.toCharArray());
-
-					String hashedKey;
-					try {
-						hashedKey = byteArrayToHexString(hash);
-					} catch (UnsupportedEncodingException e) {
-						throw new AppException(AppMessages.getInstance().getMessage("Utils.createConfig.failedToTransformKeyHash"), e);
-					}
-
-					if(panicPassword == null || panicPassword.length() == 0){
-						panicPassword = "null";
-						panicNumber = 0;
-					}else{
-						hash = CryptoUtils.getInstance().getKeyHash(context, panicPassword.toCharArray());
-						try {
-							panicPassword = byteArrayToHexString(hash);
-						} catch (UnsupportedEncodingException e) {
-							throw new AppException(AppMessages.getInstance().getMessage("Utils.createConfig.failedToTransformKeyHash"), e);
-						}
-					}
-
-					configEntityToConfigFile(new ConfigEntity(algo, hashedKey, false, panicPassword, panicNumber), file);
-
-				}else throw new AppException(AppMessages.getInstance().getMessage("Utils.changeConfig.diffPasswd"));
-
-			}else throw new AppException(AppMessages.getInstance().getMessage("Utils.changeConfig.wrongPasswd"));
-
-		}else throw new AppException(AppMessages.getInstance().getMessage("Utils.changeConfig.nullContext"));
-
-	}
-
-	public void createConfig(Context context, String oldPasswd, String newPasswd_a, String newPasswd_b, String algo, String panicPassword, int panicNumber) throws AppException {
-		File file = new File(context.getFilesDir(), Constants.CONFIG_FILE);
-
-
-		ConfigEntity ConfigEntity = new ConfigEntity();
-
-		if(context != null){
-
-			if(newPasswd_a.equals(newPasswd_b)){
-
-				byte[] hash = CryptoUtils.getInstance().getKeyHash(context, newPasswd_a.toCharArray());
-				try {
-					ConfigEntity.setHashedKey(byteArrayToHexString(hash));
-				} catch (UnsupportedEncodingException e) {
-					throw new AppException(AppMessages.getInstance().getMessage("Utils.createConfig.failedToTransformKeyHash"), e);
-				}
-
-				if(panicPassword == null || panicPassword.length() == 0){
-					panicPassword = "null";
-					panicNumber = 0;
-				}else{
-					hash = CryptoUtils.getInstance().getKeyHash(context, panicPassword.toCharArray());
-					try {
-						panicPassword = byteArrayToHexString(hash);
-					} catch (UnsupportedEncodingException e) {
-						throw new AppException(AppMessages.getInstance().getMessage("Utils.createConfig.failedToTransformKeyHash"), e);
-					}
-				}
-
-				ConfigEntity.setPanicPassword(panicPassword);
-				ConfigEntity.setPanicNumber(panicNumber);
-
-
-			}else throw new AppException(AppMessages.getInstance().getMessage("Utils.createConfig.diffPasswd"));
-
-
-			ConfigEntity.setEncAlgo(algo);	
-			configEntityToConfigFile(ConfigEntity, file);
-		}
 
 
 
-	}
-
-	public String getDeviceData(){
-
-		StringBuffer deviceData = new StringBuffer();
-		deviceData.append(Build.CPU_ABI+" ");
-		deviceData.append(Build.DEVICE+" ");
-		deviceData.append(Build.MANUFACTURER+" ");
-		deviceData.append(Build.MODEL+" ");
-		deviceData.append(Build.HARDWARE+" ");
+	
 
 
-		return deviceData.toString();
+	public String getDeviceData(Date dt){
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(dt);
+		
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		
+		String strEpoch = String.valueOf(cal.getTimeInMillis());
+
+		System.out.println("getDeviceData: "+strEpoch);
+		
+		return strEpoch;
 
 	}
 
@@ -464,29 +383,7 @@ public class Utils {
 		return data;
 	}
 
-	public int isPanicAuthenticated(Context context, String passwd, int countPanic) {
-		int ret = 0;
-		String typedHash = null;
-		String storedHash = null;
-		com.amanaje.entities.ConfigEntity cfg = null;
-		if(context!=null){ 
-			File file = new File(context.getFilesDir(), Constants.CONFIG_FILE);
-			
-			try {
-				cfg = configFileToConfigEntity(file);
-				typedHash = byteArrayToHexString(CryptoUtils.getInstance().getKeyHash(context, passwd.toCharArray()));
 
-				storedHash = cfg.getPanicPassword();
-
-			} catch (Exception e) {e.printStackTrace();}
-
-			if(typedHash!=null && storedHash!=null && (typedHash.equals(storedHash))){
-				ret = 1;
-				if(countPanic+1 == cfg.getPanicNumber()) deleteAllPictures();
-			}
-		}
-		return ret;
-	}
 
 	private void deleteAllPictures() {
 		String yapeaDir = getYapeaImageDir();

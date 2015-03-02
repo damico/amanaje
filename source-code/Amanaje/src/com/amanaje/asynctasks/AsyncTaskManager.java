@@ -3,6 +3,7 @@ package com.amanaje.asynctasks;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import com.amanaje.crypto.CryptoUtils;
 import com.amanaje.entities.ConfigEntity;
 import com.amanaje.entities.OpenPgpEntity;
 import com.amanaje.entities.SmsEntity;
+import com.amanaje.view.adapters.RowContactAdapter;
 import com.amanaje.view.adapters.StableArrayAdapter;
 
 public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
@@ -39,7 +41,7 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 	private Activity activity = null;
 	private List<ConfigEntity> cfgContactEntityLst = null;
 	private ListView listview = null;
-	private List<String> contacts = null;
+	private ArrayList<String> contacts = null;
 	private int currentTask = -1;
 
 	public AsyncTaskManager(Activity activity, int type, Object obj){
@@ -62,6 +64,7 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 	protected String doInBackground(String... params) {
 
 		String ret = null;
+		SmsEntity smsEntity = null;
 
 		switch (type) {
 		case Constants.GEN_KEY_PAIR_TYPE:
@@ -70,7 +73,13 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 
 			try {
 				CryptoUtils.getInstance().genKeyPair(activity, oPgp.getPhoneNumber(), oPgp.getPrivKeyPassword(), true);
+				byte[] seed = CryptoUtils.getInstance().pbkdf2(oPgp.getaKey1().toCharArray(), oPgp.getaKey2().getBytes(), 6, Constants.PBKDF2_KEY_LENGTH);
+				String strSeed = Utils.getInstance().byteArrayToHexString(seed);
+				File seedFile = new File(activity.getFilesDir(), Constants.SEED_FILE);
+				Utils.getInstance().writeTextToFile(seedFile, strSeed);
 			} catch (AppException e) {
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
 
@@ -138,6 +147,8 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 
 
 			listview = (ListView) activity.findViewById(R.id.listviewcontacts);
+						
+			
 
 
 			listview.setOnItemClickListener(new OnItemClickListener() {
@@ -160,10 +171,49 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 			});
 			currentTask = Constants.LIST_CONTACTS_TYPE;
 			break;
+		
+		case Constants.DEC_SMS_TYPE:
+			
+			smsEntity = (SmsEntity) obj;
+			
+			try {
+				
+				byte[] byteArrayCiphered = Base64.decode(smsEntity.getBody(), Base64.DEFAULT);
+				File seedFile = new File(activity.getFilesDir(), Constants.SEED_FILE);
+				String seedStr = Utils.getInstance().getStringFromFile(seedFile);
+				
+				System.out.println("seedStr: "+seedStr);
+				System.out.println("extraEpoch: "+smsEntity.getDate()/1000);
+	
+				String otpKey = CryptoUtils.getInstance().genOtp(Utils.getInstance().hexStringToByteArray(seedStr), smsEntity.getDate()/1000);
+				
+				System.out.println("otpKey: "+otpKey);
+				
+				byte[] decSymetric = CryptoUtils.getInstance().decSymetric(activity, otpKey, byteArrayCiphered, "BLOWFISH", new Date(smsEntity.getDate()));
+				
+				String byteArrayCipheredmd5 = Utils.getInstance().byteArrayToHexString(Utils.getInstance().genMd5(byteArrayCiphered));
+				String dexmd5 = Utils.getInstance().byteArrayToHexString(Utils.getInstance().genMd5(decSymetric));
+				
+				System.out.println("dexmd5: "+dexmd5);
+				System.out.println("byteArrayCipheredmd5: "+byteArrayCipheredmd5 + " L: "+byteArrayCiphered.length);
+				System.out.println("body  L: "+smsEntity.getBody().length());
+				
+				System.out.println("smsEntity.getPrivKeyPasswd(): "+smsEntity.getPrivKeyPasswd());
+				
+				ret = CryptoUtils.getInstance().decryptOpenPgp(activity, decSymetric, smsEntity.getPrivKeyPasswd());
+
+			} catch (AppException e) {
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			
+			
+			break;
 			
 		case Constants.SEND_SMS_TYPE:
 			
-			SmsEntity smsEntity = (SmsEntity) obj;
+			smsEntity = (SmsEntity) obj;
 			File msgFile = new File(activity.getFilesDir(), Constants.TEMP_FILE);
 
 			byte[] pubKeyByteArray = null;
@@ -173,9 +223,9 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 				//System.out.println("PRE ENC **************************** - smsEntity.getBody(): "+smsEntity.getBody());
 				//Utils.getInstance().writeTextToFile(msgFile, smsEntity.getBody());
 				
-				String demo = "The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The qui";
+				//String demo = "The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The qui";
 				
-				smsEntity.setBody(demo);
+				//smsEntity.setBody(demo);
 				Utils.getInstance().writeTextToFile(msgFile, smsEntity.getBody());
 				
 				//System.out.println(smsEntity.getPubKey());
@@ -190,7 +240,19 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 				
 				System.out.println("smsEntity.getSeed(): "+smsEntity.getSeed());
 				
-				byte[] doubleEncByteArray = CryptoUtils.getInstance().encSymetric(activity, smsEntity.getSeed(), encByteArray, "BLOWFISH");
+				Date dt = new Date();
+				long epoch = dt.getTime()/1000;
+				String sEpoch = String.valueOf(epoch);
+				
+							
+				
+				System.out.println("Epoch: "+epoch);
+				
+				String otpKey = CryptoUtils.getInstance().genOtp(Utils.getInstance().hexStringToByteArray(smsEntity.getSeed()), epoch);
+				
+				System.out.println("otpKey: "+otpKey);
+				
+				byte[] doubleEncByteArray = CryptoUtils.getInstance().encSymetric(activity, otpKey, encByteArray, "BLOWFISH", dt);
 				
 				
 				SmsManager sms = SmsManager.getDefault();
@@ -198,14 +260,18 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 				String base64a = Base64.encodeToString(encByteArray, Base64.DEFAULT);
 				String base64 = Base64.encodeToString(doubleEncByteArray, Base64.DEFAULT);
 				
-				System.out.println("=====> base64a: "+base64a);
-				System.out.println("=====> base64: "+base64);
+				
+				String md5base64a = Utils.getInstance().byteArrayToHexString(Utils.getInstance().genMd5(encByteArray));
+				String md5base64 = Utils.getInstance().byteArrayToHexString(Utils.getInstance().genMd5(doubleEncByteArray));
+				
+				System.out.println("=====> md5base64a: "+md5base64a);
+				System.out.println("=====> md5base64: "+md5base64+" L: "+base64.length());
+				System.out.println("=====> doubleEncByteArray.length: "+doubleEncByteArray.length);
 				List<String> parts = Utils.getInstance().getListParts(base64, 140);
 				
-				Date dt = new Date();
 				
-				long epoch = dt.getTime()/1000;
-				String sEpoch = String.valueOf(epoch);
+				
+				
 				int c = 1;
 				
 				
@@ -213,7 +279,7 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 					
 					part = sEpoch + ":"+String.valueOf(c)+":"+String.valueOf(parts.size())+":"+part;
 					System.out.println("=====> "+part.length()+" - "+c);
-				  //  sms.sendTextMessage(smsEntity.getAddress(), null, part, null, null);
+				  sms.sendTextMessage(smsEntity.getAddress(), null, part, null, null);
 				    c++;
 				}
 				
@@ -221,6 +287,9 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 			} catch (AppException e) {
 				e.printStackTrace();
 			
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}finally{
 				msgFile.delete();
 			}
@@ -248,7 +317,8 @@ public class AsyncTaskManager extends AsyncTask<String, Integer, String> {
 			break;
 			
 		case Constants.LIST_CONTACTS_TYPE:
-			final StableArrayAdapter adapter = new StableArrayAdapter(activity, android.R.layout.simple_list_item_1, contacts);
+			//final StableArrayAdapter adapter = new StableArrayAdapter(activity, android.R.layout.simple_list_item_1, contacts);
+			final RowContactAdapter adapter = new RowContactAdapter(contacts, activity, cfgContactEntityLst);
 			listview.setAdapter(adapter);
 			break;
 

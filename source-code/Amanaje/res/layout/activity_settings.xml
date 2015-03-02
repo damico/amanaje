@@ -1,21 +1,27 @@
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="match_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="fill_horizontal"
+    android:background="#CCCCCC" >
+
+<TableLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.amanaje.activities.SettingsActivity" >
+    android:paddingTop="@dimen/activity_vertical_margin" >
 
     <TableRow
         android:id="@+id/tableRow5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill_horizontal" >
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_horizontal" >
 
             <TextView
                 android:id="@+id/textView4"
@@ -28,10 +34,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="10" >
-
-                <requestFocus />
-            </EditText>
+                android:ems="10"
+                android:inputType="phone" />
 
         </LinearLayout>
 
@@ -39,11 +43,11 @@
 
     <TableRow
         android:id="@+id/tableRow4"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content" >
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content" >
 
             <TextView
@@ -55,35 +59,10 @@
 
             <EditText
                 android:id="@+id/privKeyPasswordEt"
-                android:layout_width="110dp"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textPassword" />
-        </LinearLayout>
-    </TableRow>
-
-    <TableRow
-        android:id="@+id/tableRow1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <Button
-                android:id="@+id/genKeyPairBt"
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Gen Key Pair" />
-
-            <Button
-                android:id="@+id/copyPubKeyBt"
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Copy Pub Key" />
         </LinearLayout>
     </TableRow>
 
@@ -103,8 +82,8 @@
                 android:text="Activation Key 1:" />
 
             <EditText
-                android:id="@+id/replyEt"
-                android:layout_width="178dp"
+                android:id="@+id/aKey1Et"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|fill_horizontal|top"
                 android:layout_marginTop="16dp"
@@ -121,35 +100,49 @@
         android:layout_height="wrap_content" >
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content" >
 
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Activation Key 2:" />
 
             <EditText
-                android:id="@+id/numberEt"
-                android:layout_width="178dp"
+                android:id="@+id/aKey2Et"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:ems="10" />
         </LinearLayout>
+
+        
+
     </TableRow>
+<TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
 
-    <TableRow
-        android:id="@+id/tableRow6"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
 
-        <Button
-            android:id="@+id/replyMsgBt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="21dp"
-            android:text="Gen Seed" />
-    </TableRow>
+                <Button
+                    android:id="@+id/genKeyPairBt"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Save Settings" />
 
+                <Button
+                    android:id="@+id/copyPubKeyBt"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Copy Pub Key" />
+            </LinearLayout>
+        </TableRow>
 </TableLayout>
+
+</ScrollView>

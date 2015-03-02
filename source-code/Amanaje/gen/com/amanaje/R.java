@@ -23,50 +23,53 @@ public final class R {
     }
     public static final class drawable {
         public static final int ic_launcher=0x7f020000;
+        public static final int send=0x7f020001;
+        public static final int settings=0x7f020002;
     }
     public static final class id {
-        public static final int actKey1ContactEt=0x7f08000f;
-        public static final int actKey2ContactEt=0x7f080012;
-        public static final int action_add=0x7f080027;
-        public static final int action_contacts=0x7f080028;
-        public static final int action_messages=0x7f080029;
-        public static final int action_settings=0x7f080026;
-        public static final int copyPubKeyBt=0x7f080022;
-        public static final int decBt=0x7f080018;
-        public static final int delContactBt=0x7f080014;
-        public static final int genKeyPairBt=0x7f080021;
-        public static final int lblMsg=0x7f080024;
-        public static final int lblNumber=0x7f080025;
-        public static final int listview=0x7f080016;
-        public static final int listviewcontacts=0x7f08001e;
-        public static final int messageTv=0x7f080003;
-        public static final int myPhoneNumberEt=0x7f08001f;
-        public static final int nickContactEt=0x7f080004;
-        public static final int numberContactEt=0x7f080007;
-        public static final int numberEt=0x7f080023;
-        public static final int privKeyPasswdEd=0x7f080017;
-        public static final int privKeyPasswordEt=0x7f080020;
-        public static final int pubKeyContactEt=0x7f08000a;
-        public static final int replyEt=0x7f080019;
-        public static final int replyMsgBt=0x7f08001a;
-        public static final int saveContactBt=0x7f080015;
-        public static final int sendMsgBt=0x7f08001d;
-        public static final int sendSmsBt=0x7f080001;
-        public static final int smsEt=0x7f08001c;
-        public static final int tableRow1=0x7f080002;
-        public static final int tableRow2=0x7f080005;
-        public static final int tableRow3=0x7f080008;
-        public static final int tableRow4=0x7f08000b;
-        public static final int tableRow5=0x7f08000c;
-        public static final int tableRow6=0x7f080013;
-        public static final int tableRow7=0x7f08000d;
-        public static final int tableRow8=0x7f080010;
-        public static final int tableRowSendSms=0x7f080000;
-        public static final int targetTv=0x7f08001b;
-        public static final int textView1=0x7f08000e;
-        public static final int textView2=0x7f080006;
-        public static final int textView3=0x7f080009;
-        public static final int textView4=0x7f080011;
+        public static final int aKey1Et=0x7f08001e;
+        public static final int aKey2Et=0x7f08001f;
+        public static final int actKey1ContactEt=0x7f080008;
+        public static final int actKey2ContactEt=0x7f08000a;
+        public static final int action_add=0x7f080028;
+        public static final int action_contacts=0x7f080029;
+        public static final int action_messages=0x7f08002a;
+        public static final int action_settings=0x7f080027;
+        public static final int copyPubKeyBt=0x7f080021;
+        public static final int decBt=0x7f080010;
+        public static final int delContactBt=0x7f08000b;
+        public static final int delMsgBt=0x7f080014;
+        public static final int genKeyPairBt=0x7f080020;
+        public static final int lblMsg=0x7f080022;
+        public static final int lblNumber=0x7f080023;
+        public static final int list_item_string=0x7f080024;
+        public static final int listview=0x7f08000d;
+        public static final int listviewcontacts=0x7f08001a;
+        public static final int messageTv=0x7f080001;
+        public static final int myPhoneNumberEt=0x7f08001c;
+        public static final int nickContactEt=0x7f080002;
+        public static final int numberContactEt=0x7f080004;
+        public static final int privKeyPasswdEd=0x7f08000f;
+        public static final int privKeyPasswordEt=0x7f08001d;
+        public static final int pubKeyContactEt=0x7f080006;
+        public static final int replyEt=0x7f080011;
+        public static final int replyMsgBt=0x7f080013;
+        public static final int saveContactBt=0x7f08000c;
+        public static final int send=0x7f080026;
+        public static final int sendMsgBt=0x7f080019;
+        public static final int sendSmsBt=0x7f080000;
+        public static final int settings=0x7f080025;
+        public static final int smsEt=0x7f080018;
+        public static final int tableRow1=0x7f080015;
+        public static final int tableRow2=0x7f080012;
+        public static final int tableRow3=0x7f080017;
+        public static final int tableRow4=0x7f08000e;
+        public static final int tableRow5=0x7f08001b;
+        public static final int targetTv=0x7f080016;
+        public static final int textView1=0x7f080007;
+        public static final int textView2=0x7f080003;
+        public static final int textView3=0x7f080005;
+        public static final int textView4=0x7f080009;
     }
     public static final class layout {
         public static final int activity_contact_detail=0x7f030000;
@@ -76,6 +79,7 @@ public final class R {
         public static final int activity_priv_contacts=0x7f030004;
         public static final int activity_settings=0x7f030005;
         public static final int row=0x7f030006;
+        public static final int rowcontact=0x7f030007;
     }
     public static final class menu {
         public static final int contact_detail=0x7f070000;

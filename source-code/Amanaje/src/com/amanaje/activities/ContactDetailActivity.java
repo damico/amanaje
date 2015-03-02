@@ -3,6 +3,8 @@ package com.amanaje.activities;
 import java.io.File;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,7 +19,6 @@ import com.amanaje.R;
 import com.amanaje.asynctasks.AsyncTaskManager;
 import com.amanaje.commons.ActivityHelper;
 import com.amanaje.commons.Constants;
-import com.amanaje.commons.Utils;
 import com.amanaje.entities.ConfigEntity;
 
 public class ContactDetailActivity extends Activity {
@@ -172,9 +173,36 @@ public class ContactDetailActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				if(!nick.isEnabled()) thisContact.delete();
+				if(!nick.isEnabled()){
+					
+					thisContact = new File(getFilesDir(), thisContactFileName);
+					AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+					builder.setMessage("Are you sure?").setPositiveButton("Yes", dialogClickListener)
+					    .setNegativeButton("No", dialogClickListener).show();
+					
+					
+				}
 
 			}
+			
+			DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+			    @Override
+			    public void onClick(DialogInterface dialog, int which) {
+			        switch (which){
+			        case DialogInterface.BUTTON_POSITIVE:
+			        	thisContact.delete();
+			        	onBackPressed();
+			        	
+			            break;
+
+			        case DialogInterface.BUTTON_NEGATIVE:
+			            //No button clicked
+			            break;
+			        }
+			    }
+			};
+
+			
 		});
 	}
 
